@@ -28,16 +28,10 @@ public class PlayerPickUpDrop : MonoBehaviour
         pickUpAction.action.canceled -= DropObject;
     }
 
-    private void Update()
-    {
-        if (_isHoldingObject && _heldObject != null)
-        {
-            // Keep the held object at the hold point
-            _heldObject.transform.position = holdPoint.position;
-            _heldObject.transform.rotation = holdPoint.rotation;
-        }
-    }
-
+    /*
+    * Method to pick up an object, performing a raycast and checking for a GrabbableObject.
+    * @param context The input action context from the performed event.
+    */
     private void PickObject(InputAction.CallbackContext context)
     {
         if (_isHoldingObject) return;
@@ -52,18 +46,16 @@ public class PlayerPickUpDrop : MonoBehaviour
                 _heldObject = hit.collider.gameObject;
                 _isHoldingObject = true;
             }
-            /*
-            _heldObject = hit.collider.gameObject;
-            _heldObject.GetComponent<Rigidbody>().isKinematic = true; // Make the object kinematic while held
-            _isHoldingObject = true;
-            */
         }
     }
 
+    /*
+    * Method to drop the object, checking if currently holding one and calling its Drop method.
+    * @param context The input action context from the canceled event.
+    */
     private void DropObject(InputAction.CallbackContext context)
     {
         if (!_isHoldingObject) return;
-
         Debug.Log("Dropped: " + _heldObject.name);
         _heldObject.GetComponent<GrabbableObject>().Drop();
         _isHoldingObject = false;
