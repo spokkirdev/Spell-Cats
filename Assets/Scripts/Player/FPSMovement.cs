@@ -1,6 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum PlayerState
+{
+    Standing,
+    Walking,
+    Running,
+    Crouching
+}
+
 public class FPSMovement : MonoBehaviour
 {
     [Header("Speed Settings")]
@@ -33,12 +41,16 @@ public class FPSMovement : MonoBehaviour
     private bool _isCrouching;
     private float _verticalVelocity;
     private float _targetHeight;
+    private PlayerState _currentState;
+
+    public PlayerState CurrentState => _currentState;
  
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _targetHeight = standingHeight;
+        _currentState = PlayerState.Standing;
 
         if (_characterController == null)
         {
@@ -76,6 +88,7 @@ public class FPSMovement : MonoBehaviour
         HandleGravity();
         HandleMovement();
         HandleCrouchTransition();
+        HandleStateTransitions();
     }
 
     private void StoreMovementInput(InputAction.CallbackContext context)
@@ -167,5 +180,25 @@ public class FPSMovement : MonoBehaviour
             cameraTransform.localPosition, 
             cameraLocalPos, 
             Time.deltaTime * crouchTransitionSpeed);
+    }
+
+    private void HandleStateTransitions()
+    {
+        if (_isCrouching)
+        {
+            _currentState = PlayerState.Crouching;
+        }
+        else if (_isSprinting && _moveInput.magnitude > 0.1f)
+        {
+            _currentState = PlayerState.Running;
+        }
+        else if (_moveInput.magnitude > 0.1f)
+        {
+            _currentState = PlayerState.Walking;
+        }
+        else
+        {
+            _currentState = PlayerState.Standing;
+        }
     }
 }

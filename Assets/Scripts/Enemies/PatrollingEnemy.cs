@@ -28,6 +28,7 @@ public class PatrollingEnemy : MonoBehaviour
     private EnemyState _currentState;
 
 
+    public EnemyState GetState() => _currentState;
 
     private void Start()
     {
@@ -84,4 +85,20 @@ public class PatrollingEnemy : MonoBehaviour
         _navMeshAgent.SetDestination(_patrolPoints[_currentPatrolIndex].position);
         _currentPatrolIndex = (_currentPatrolIndex + 1) % _patrolPoints.Length; // Loop back to the first point
     }
+
+    public void Chase(Transform chasePosition)
+    {
+        _currentState = EnemyState.Chasing;
+
+        _navMeshAgent.SetDestination(chasePosition.position);
+        _navMeshAgent.speed = chaseSpeed;
+    }
+
+    public void StopChasing()
+    {
+        _navMeshAgent.speed = patrolSpeed;
+        _currentState = EnemyState.Patrolling;
+        GoToNextPatrolPoint();
+    }
+
 }
