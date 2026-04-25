@@ -59,8 +59,6 @@ public class PatrollingEnemy : MonoBehaviour
     private void Patrol()
     {
         if (_currentState != EnemyState.Patrolling) return;
-        Debug.Log(_navMeshAgent.remainingDistance < stopDistance);
-        Debug.Log(!_navMeshAgent.pathPending);
         if (_navMeshAgent.remainingDistance < stopDistance && !_navMeshAgent.pathPending)
         {
             StartCoroutine(WaitAtPatrolPoint());

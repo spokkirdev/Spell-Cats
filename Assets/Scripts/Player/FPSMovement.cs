@@ -6,7 +6,8 @@ public enum PlayerState
     Standing,
     Walking,
     Running,
-    Crouching
+    Crouching,
+    KnockedDown
 }
 
 public class FPSMovement : MonoBehaviour
@@ -34,14 +35,21 @@ public class FPSMovement : MonoBehaviour
     [SerializeField] private InputActionReference sprintAction;
     [SerializeField] private InputActionReference crouchAction;
 
+    [Header("Knockback Settings")]
+    [SerializeField] private float knockbackDecay = 8f;
+    [SerializeField] private float knockbackControlLockTime = 0.2f;
+
     private CharacterController _characterController;
     private Vector2 _moveInput;
     private bool _isGrounded;
     private bool _isSprinting;
     private bool _isCrouching;
+    private bool _isKnockedDown;
     private float _verticalVelocity;
     private float _targetHeight;
+    private float _knockbackTimer;
     private PlayerState _currentState;
+    private Vector3 _knockBackVelocity;
 
     public PlayerState CurrentState => _currentState;
  
@@ -86,7 +94,14 @@ public class FPSMovement : MonoBehaviour
     {
         _isGrounded = _characterController.isGrounded;
         HandleGravity();
-        HandleMovement();
+        if (_isKnockedDown)
+        {
+            HandleKnockback();
+        }
+        else
+        {
+            HandleMovement();
+        }
         HandleCrouchTransition();
         HandleStateTransitions();
     }
@@ -148,6 +163,7 @@ public class FPSMovement : MonoBehaviour
 
     private void HandleMovement()
     {
+        if (_isKnockedDown) return;
         var move = cameraTransform.TransformDirection(new Vector3(_moveInput.x, 0, _moveInput.y)).normalized;
         var currentSpeed = _isCrouching ? crouchSpeed : _isSprinting ? sprintSpeed : walkSpeed;
         var finalMove = move * currentSpeed;
@@ -184,7 +200,11 @@ public class FPSMovement : MonoBehaviour
 
     private void HandleStateTransitions()
     {
-        if (_isCrouching)
+        if (_isKnockedDown)
+        {
+            _currentState = PlayerState.KnockedDown;
+        }
+        else if (_isCrouching)
         {
             _currentState = PlayerState.Crouching;
         }
@@ -201,4 +221,32 @@ public class FPSMovement : MonoBehaviour
             _currentState = PlayerState.Standing;
         }
     }
+
+    private void HandleKnockback()
+    {
+        Vector3 move = _knockBackVelocity;
+        move.y = _verticalVelocity; // Apply vertical velocity for knockback
+
+        _characterController.Move(move * Time.deltaTime);
+
+        _knockBackVelocity = Vector3.Lerp(_knockBackVelocity, Vector3.zero, knockbackDecay * Time.deltaTime);
+        _knockbackTimer -= Time.deltaTime;
+        if (_knockbackTimer <= 0f && _knockBackVelocity.magnitude < 0.1f && _isGrounded)
+        {
+            _isKnockedDown = false;
+        }
+    }
+
+    public void ReceiveKnockback(Vector3 direction, float force)
+    {
+        direction.y = 0f; // Ensure knockback is horizontal
+        direction.Normalize();
+
+        _knockBackVelocity = direction * force;
+        _verticalVelocity = Mathf.Clamp(force * 0.2f, 0f, 3f); // Add some vertical lift
+        _isKnockedDown = true;
+        _knockbackTimer = 0.5f; // Knockback lasts for
+    }
+
+
 }
