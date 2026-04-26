@@ -957,7 +957,7 @@ GameObject:
   - component: {fileID: 639412089}
   - component: {fileID: 639412094}
   - component: {fileID: 639412095}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: a (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1339,7 +1339,7 @@ GameObject:
   - component: {fileID: 651997946}
   - component: {fileID: 651997945}
   - component: {fileID: 651997944}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: CurvedStair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3566,7 +3566,7 @@ GameObject:
   - component: {fileID: 1002154688}
   - component: {fileID: 1002154687}
   - component: {fileID: 1002154686}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: a (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4131,7 +4131,7 @@ GameObject:
   - component: {fileID: 1151497715}
   - component: {fileID: 1151497714}
   - component: {fileID: 1151497713}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5336,7 +5336,7 @@ GameObject:
   - component: {fileID: 1195421261}
   - component: {fileID: 1195421266}
   - component: {fileID: 1195421268}
-  - component: {fileID: 1195421267}
+  - component: {fileID: 1195421274}
   - component: {fileID: 1195421273}
   - component: {fileID: 1195421271}
   - component: {fileID: 1195421270}
@@ -5483,18 +5483,6 @@ MonoBehaviour:
   patrolSpeed: 3.5
   chaseSpeed: 5
   stopDistance: 0.5
---- !u!114 &1195421267
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1195421260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 359d605930615154690d210407b37050, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SoundSensor
 --- !u!114 &1195421268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5575,6 +5563,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttack
   attackRange: 1.5
   cooldownTime: 1
+--- !u!114 &1195421274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195421260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d2944a205f7fb4aab19171615493c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisionSensor
+  visionRange: 10
+  visionAngle: 90
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &1242325575
 GameObject:
   m_ObjectHideFlags: 0
@@ -6108,7 +6116,7 @@ GameObject:
   - component: {fileID: 1820249523}
   - component: {fileID: 1820249522}
   - component: {fileID: 1820249521}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7522,7 +7530,7 @@ GameObject:
   - component: {fileID: 1919105936}
   - component: {fileID: 1919105935}
   - component: {fileID: 1919105934}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
