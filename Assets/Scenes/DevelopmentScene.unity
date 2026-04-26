@@ -5340,6 +5340,7 @@ GameObject:
   - component: {fileID: 1195421273}
   - component: {fileID: 1195421271}
   - component: {fileID: 1195421270}
+  - component: {fileID: 1195421275}
   - component: {fileID: 1195421272}
   m_Layer: 0
   m_Name: Enemy
@@ -5508,6 +5509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab3c96eda58b5f429235c1647619f14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KnockbackEffect
+  priority: 5
   knockbackForce: 100
 --- !u!114 &1195421271
 MonoBehaviour:
@@ -5521,6 +5523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0b38afebb5382c40bf17ffdab789f48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
+  priority: 10
   damageAmount: 10
 --- !u!54 &1195421272
 Rigidbody:
@@ -5583,6 +5586,19 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &1195421275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195421260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e90763791e6bcc4f874a790b6d13c83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DropEffect
+  priority: 9
 --- !u!1 &1242325575
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Linq;
 
 public class MeleeAttack : Attack
 {
@@ -12,7 +13,7 @@ public class MeleeAttack : Attack
 
     private void Awake()
     {
-        _attackEffects = GetComponents<AttackEffect>();
+        _attackEffects = GetComponents<AttackEffect>().OrderBy(e => e.Priority).ToArray();
     }
 
     public override void PerformAttack(Transform target)

@@ -7,12 +7,27 @@ public class KnockbackEffect : AttackEffect
 
     public override void Apply(Transform target, Transform attacker)
     {
-        Debug.Log($"Applying KnockbackEffect to {target.name} from {attacker.name}");
-        CharacterController controller = target.GetComponent<CharacterController>();
-        if (controller != null)        
+        var movement = target.GetComponentInParent<FPSMovement>();
+        if (movement == null)
         {
-            Debug.Log($"Applying {knockbackForce} knockback to {target.name} from {attacker.name}");
-            controller.GetComponent<FPSMovement>()?.ReceiveKnockback((target.position - attacker.position).normalized, knockbackForce);
+            Debug.LogWarning($"No FPSMovement found on {target.name}");
+            return;
         }
+
+        // Dirección robusta
+        Vector3 direction = target.position - attacker.position;
+        direction.y = 0f;
+
+        // Evitar vector cero
+        if (direction.sqrMagnitude < 0.01f)
+        {
+            direction = attacker.forward;
+        }
+
+        direction.Normalize();
+
+        Debug.Log($"Applying knockback: dir={direction}, force={knockbackForce}");
+
+        movement.ReceiveKnockback(direction, knockbackForce);
     }
 }

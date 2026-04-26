@@ -62,5 +62,24 @@ public class PlayerPickUpDrop : MonoBehaviour
         _heldObject = null;
     }
 
+    public bool ForceDrop()
+{
+    if (!_isHoldingObject || _heldObject == null)
+        return false;
+
+    Debug.Log("Force Dropped: " + _heldObject.name);
+
+    var grabbable = _heldObject.GetComponent<GrabbableObject>();
+    if (grabbable != null)
+    {
+        grabbable.Drop();
+    }
+
+    _isHoldingObject = false;
+    _heldObject = null;
+
+    return true;
+}
+
 
 }
