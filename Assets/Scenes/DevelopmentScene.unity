@@ -8080,6 +8080,7 @@ GameObject:
   - component: {fileID: 2001729598}
   - component: {fileID: 2001729599}
   - component: {fileID: 2001729600}
+  - component: {fileID: 2001729601}
   m_Layer: 6
   m_Name: 1_Player
   m_TagString: Untagged
@@ -8194,6 +8195,7 @@ MonoBehaviour:
   walkingTriggerScale: 10
   runningTriggerScale: 20
   standingTriggerScale: 1
+  levitateTriggerScale: 0
   soundTrigger: {fileID: 1350263325}
   playerMovement: {fileID: 2001729597}
 --- !u!136 &2001729600
@@ -8219,6 +8221,22 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2001729601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2001729594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ad4974a4b3811c48825ca0bdcd0cf5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpellManager
+  spells: []
+  activeSpell: {fileID: 11400000, guid: 6f6dcc405b7552d4583d166fed84c037, type: 2}
+  spellCastPoint: {fileID: 2001729596}
+  castSpellAction: {fileID: 1605844295157780844, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!43 &2027914658
 Mesh:
   m_ObjectHideFlags: 0

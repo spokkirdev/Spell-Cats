@@ -8,6 +8,7 @@ public class PlayerSound : MonoBehaviour
     [SerializeField] private float walkingTriggerScale = 2f;
     [SerializeField] private float runningTriggerScale = 3f;
     [SerializeField] private float standingTriggerScale = 1f;
+    [SerializeField] private float levitateTriggerScale = 0f;
 
     [Header("References")]
     [SerializeField] private GameObject soundTrigger;
@@ -51,6 +52,8 @@ public class PlayerSound : MonoBehaviour
                 return runningTriggerScale;
             case PlayerState.Crouching:
                 return crouchingTriggerScale;
+            case PlayerState.Levitating:
+                return levitateTriggerScale;
             default:
                 return standingTriggerScale;
         }

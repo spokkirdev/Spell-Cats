@@ -7,7 +7,8 @@ public enum PlayerState
     Walking,
     Running,
     Crouching,
-    KnockedDown
+    KnockedDown,
+    Levitating
 }
 
 public class FPSMovement : MonoBehaviour
@@ -45,6 +46,7 @@ public class FPSMovement : MonoBehaviour
     private bool _isSprinting;
     private bool _isCrouching;
     private bool _isKnockedDown;
+    private bool _isLevitating;
     private float _verticalVelocity;
     private float _targetHeight;
     private float _knockbackTimer;
@@ -204,6 +206,10 @@ public class FPSMovement : MonoBehaviour
         {
             _currentState = PlayerState.KnockedDown;
         }
+        else if (_isLevitating)
+        {
+            _currentState = PlayerState.Levitating;
+        }
         else if (_isCrouching)
         {
             _currentState = PlayerState.Crouching;
@@ -248,5 +254,14 @@ public class FPSMovement : MonoBehaviour
         _knockbackTimer = 0.5f; // Knockback lasts for
     }
 
+    public void StartLevitation()
+    {
+        _isLevitating = true;
+    }
+
+    public void StopLevitation()
+    {
+        _isLevitating = false;
+    }
 
 }
