@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - PlayerSound
+  - Cat
   layers:
   - Default
   - TransparentFX
@@ -15,7 +16,7 @@ TagManager:
   - Player
   - GrabbableObject
   - Obstacle
-  - 
+  - PlayerInvisible
   - 
   - 
   - 

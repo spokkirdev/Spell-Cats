@@ -50,5 +50,11 @@ public class SpellManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
         activeSpell.Stop(caster);
     }
+
+    public void SetActiveSpell(Spell newSpell)
+    {
+        activeSpell = newSpell;
+    }
+
     
 }

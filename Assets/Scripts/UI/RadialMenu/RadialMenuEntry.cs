@@ -9,6 +9,7 @@ public class RadialMenuEntry : MonoBehaviour, IPointerClickHandler, IPointerEnte
 {
     [SerializeField] private TextMeshProUGUI label;
     [SerializeField] private Image icon;
+    [SerializeField] private Spell spell;
 
 
     
@@ -59,4 +60,15 @@ public class RadialMenuEntry : MonoBehaviour, IPointerClickHandler, IPointerEnte
         _rectTransform.DOComplete();
         _rectTransform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutQuad);
     }
+
+    public void SetSpell(Spell newSpell)
+    {
+        spell = newSpell;
+    }
+
+    public Spell GetSpell()
+    {
+        return spell;
+    }
+
 }

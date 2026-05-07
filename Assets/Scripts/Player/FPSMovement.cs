@@ -8,7 +8,8 @@ public enum PlayerState
     Running,
     Crouching,
     KnockedDown,
-    Levitating
+    Levitating,
+    Invisible
 }
 
 public class FPSMovement : MonoBehaviour
@@ -47,6 +48,7 @@ public class FPSMovement : MonoBehaviour
     private bool _isCrouching;
     private bool _isKnockedDown;
     private bool _isLevitating;
+    private bool _isInvisible;
     private float _verticalVelocity;
     private float _targetHeight;
     private float _knockbackTimer;
@@ -77,7 +79,6 @@ public class FPSMovement : MonoBehaviour
         sprintAction.action.canceled += Sprint;
         crouchAction.action.performed += Crouch;
 
-
     }
 
     private void OnDisable()
@@ -88,7 +89,6 @@ public class FPSMovement : MonoBehaviour
         sprintAction.action.performed -= Sprint;
         sprintAction.action.canceled -= Sprint;
         crouchAction.action.performed -= Crouch;
-
     }
 
 
@@ -210,6 +210,10 @@ public class FPSMovement : MonoBehaviour
         {
             _currentState = PlayerState.Levitating;
         }
+        else if (_isInvisible)
+        {
+            _currentState = PlayerState.Invisible;
+        }
         else if (_isCrouching)
         {
             _currentState = PlayerState.Crouching;
@@ -242,6 +246,7 @@ public class FPSMovement : MonoBehaviour
             _isKnockedDown = false;
         }
     }
+    
 
     public void ReceiveKnockback(Vector3 direction, float force)
     {
@@ -264,4 +269,15 @@ public class FPSMovement : MonoBehaviour
         _isLevitating = false;
     }
 
+    public void StartInvisibility()
+    {
+        _isInvisible = true;
+        gameObject.layer = LayerMask.NameToLayer("PlayerInvisible");
+    }
+
+    public void StopInvisibility()
+    {
+        _isInvisible = false;
+        gameObject.layer = LayerMask.NameToLayer("Player");
+    }
 }

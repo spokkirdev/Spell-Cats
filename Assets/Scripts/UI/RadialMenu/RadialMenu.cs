@@ -4,8 +4,10 @@ using DG.Tweening;
 
 public class RadialMenu : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private GameObject entryPrefab;
-    [SerializeField] private List<Spell> spells; 
+    [SerializeField] private List<Spell> spells;
+    [SerializeField] private SpellManager spellManager;
 
 
     private List<RadialMenuEntry> _entries;
@@ -16,14 +18,15 @@ public class RadialMenu : MonoBehaviour
     }
 
 
-    private void CreateEntry(string label, Sprite icon)
+    private void CreateEntry(Spell spell)
     {
         GameObject entryObj = Instantiate(entryPrefab, transform);
         RadialMenuEntry entry = entryObj.GetComponent<RadialMenuEntry>();
         if (entry != null)
         {
-            entry.SetLabel(label);
-            entry.SetIcon(icon);
+            entry.SetLabel(spell.spellName);
+            entry.SetIcon(spell.spellIcon);
+            entry.SetSpell(spell);
             entry.OnEntryClicked += HandleEntryClicked;
             _entries.Add(entry);
         }
@@ -38,7 +41,7 @@ public class RadialMenu : MonoBehaviour
     {
         for (int i = 0; i < spells.Count; i++)
         {
-            CreateEntry(spells[i].spellName, spells[i].spellIcon);
+            CreateEntry(spells[i]);
         }
         RearrangeEntries();
     }
@@ -56,15 +59,17 @@ public class RadialMenu : MonoBehaviour
         _entries.Clear();
     }
 
-    public void ToggleMenu()
+    public bool ToggleMenu()
     {
         if (_entries.Count > 0)
         {
             CloseMenu();
+            return false;
         }
         else
         {
             OpenMenu();
+            return true;
         }
     }
 
@@ -85,5 +90,6 @@ public class RadialMenu : MonoBehaviour
     private void HandleEntryClicked(RadialMenuEntry entry)
     {
         Debug.Log("Clicked from menu: " + entry);
+        spellManager.SetActiveSpell(entry.GetSpell());
     }
 }
