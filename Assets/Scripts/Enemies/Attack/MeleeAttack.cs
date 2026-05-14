@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Linq;
 
+/*
+* MeleeAttack is a specific type of Attack that represents close-range combat. It checks if the target is within a certain range and applies damage or effects accordingly.
+* It also manages cooldowns to prevent the enemy from attacking too frequently.
+*/
 public class MeleeAttack : Attack
 {
 
@@ -16,6 +20,9 @@ public class MeleeAttack : Attack
         _attackEffects = GetComponents<AttackEffect>().OrderBy(e => e.Priority).ToArray();
     }
 
+    /*
+    * PerformAttack applies all the effects of the attack to the target. It also updates the last attack time to manage cooldowns.
+    */
     public override void PerformAttack(Transform target)
     {
         _lastAttackTime = Time.time;
