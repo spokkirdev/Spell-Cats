@@ -8,4 +8,9 @@ public class LobbyMenuManager : MonoBehaviour
     {
         NetworkManager.Singleton.Shutdown();
     }
+
+    public void Out_PlayerReady()
+    {
+        OnlineGameData.Singleton.UpdatePlayerReadyServerRpc(NetworkManager.Singleton.LocalClientId);
+    }
 }
