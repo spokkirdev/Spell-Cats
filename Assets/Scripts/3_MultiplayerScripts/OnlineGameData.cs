@@ -84,6 +84,8 @@ public class OnlineGameData : NetworkBehaviour
     {
         // TODO: esto se puede optimizar, no hace falta enviar toda la lista cada vez, pero bueno, es un ejemplo
         onlinePlayersConnected = playersConnected.ToList();
+        NewPlayerOnList?.Invoke();
+
     }
 
     public override void OnDestroy()
