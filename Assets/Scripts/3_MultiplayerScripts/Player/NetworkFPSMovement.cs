@@ -1,0 +1,299 @@
+using Unity.Cinemachine;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+/**
+public enum PlayerState
+{
+    Standing,
+    Walking,
+    Running,
+    Crouching,
+    KnockedDown,
+    Levitating,
+    Invisible
+}
+**/
+
+public class NetworkFPSMovement : NetworkBehaviour
+{
+    [Header("Speed Settings")]
+    [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float sprintSpeed = 8f;
+    [SerializeField] private float crouchSpeed = 2f;
+
+    [Header("Jump and  Fall Settings")]
+    [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float gravity = -12f;
+    [SerializeField] private float initialFallSpeed = -2f;
+
+    [Header("Crouch Settings")]
+    [SerializeField] private float standingHeight = 2f;
+    [SerializeField] private float crouchingHeight = 1f;
+    [SerializeField] private float crouchTransitionSpeed = 10f;
+    [SerializeField] private float cameraOffset = 0.4f;
+
+    [Header("References")]
+    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private InputActionReference moveAction;
+    [SerializeField] private InputActionReference jumpAction;
+    [SerializeField] private InputActionReference sprintAction;
+    [SerializeField] private InputActionReference crouchAction;
+
+    [Header("Knockback Settings")]
+    [SerializeField] private float knockbackDecay = 8f;
+    [SerializeField] private float knockbackControlLockTime = 0.2f;
+
+    private CharacterController _characterController;
+    private Vector2 _moveInput;
+    private bool _isGrounded;
+    private bool _isSprinting;
+    private bool _isCrouching;
+    private bool _isKnockedDown;
+    private bool _isLevitating;
+    private bool _isInvisible;
+    private float _verticalVelocity;
+    private float _targetHeight;
+    private float _knockbackTimer;
+    private PlayerState _currentState;
+    private Vector3 _knockBackVelocity;
+
+    public PlayerState CurrentState => _currentState;
+ 
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            GetComponentInChildren<CinemachineCamera>().gameObject.SetActive(false);
+        }
+    }
+    private void Awake()
+    {
+        _characterController = GetComponent<CharacterController>();
+        _targetHeight = standingHeight;
+        _currentState = PlayerState.Standing;
+
+        if (_characterController == null)
+        {
+            Debug.LogError("CharacterController component is missing on this GameObject.");
+        }
+    }
+
+    private void OnEnable()
+    {
+        moveAction.action.performed += StoreMovementInput;
+        moveAction.action.canceled += StoreMovementInput;
+        jumpAction.action.performed += Jump;
+        sprintAction.action.performed += Sprint;
+        sprintAction.action.canceled += Sprint;
+        crouchAction.action.performed += Crouch;
+
+    }
+
+    private void OnDisable()
+    {
+        moveAction.action.performed -= StoreMovementInput;
+        moveAction.action.canceled -= StoreMovementInput;
+        jumpAction.action.performed -= Jump;
+        sprintAction.action.performed -= Sprint;
+        sprintAction.action.canceled -= Sprint;
+        crouchAction.action.performed -= Crouch;
+    }
+
+
+    private void Update()
+    {
+        if (!IsOwner) return;
+        Debug.Log("PlayerState: " + _currentState);
+        Debug.Log($"Owner: {IsOwner} | MoveInput: {_moveInput} | Cam: {cameraTransform?.name}");
+
+        _isGrounded = _characterController.isGrounded;
+        HandleGravity();
+        if (_isKnockedDown)
+        {
+            HandleKnockback();
+        }
+        else
+        {
+            HandleMovement();
+        }
+        HandleCrouchTransition();
+        HandleStateTransitions();
+    }
+
+    private void StoreMovementInput(InputAction.CallbackContext context)
+    {
+        Debug.Log("Storing movement input: " + context.ReadValue<Vector2>());
+        _moveInput = context.ReadValue<Vector2>();
+    }
+
+    private void Jump(InputAction.CallbackContext context)
+    {
+        if (_isGrounded)
+        {
+            _verticalVelocity = jumpForce;
+        }
+    }
+
+    private void Crouch(InputAction.CallbackContext context)
+    {
+        if (_isCrouching)
+        {
+            if (!CanStandUp())
+            {
+                return; 
+            }
+            _targetHeight = standingHeight;
+        }
+        else
+        {
+            _targetHeight = crouchingHeight;
+        }
+        _isCrouching = !_isCrouching;
+    }
+
+    private bool CanStandUp()
+    {
+        return !Physics.CapsuleCast(
+            transform.position + _characterController.center, 
+            transform.position + (Vector3.up * _characterController.height / 2f), 
+            _characterController.radius, 
+            Vector3.up
+            );
+    }
+
+    private void Sprint(InputAction.CallbackContext context)
+    {
+        _isSprinting = context.performed;
+    }
+    
+    private void HandleGravity()
+    {
+        if (_isGrounded && _verticalVelocity < 0)
+        {
+            _verticalVelocity = initialFallSpeed; // Small negative value to keep the character grounded
+        }
+        _verticalVelocity += gravity * Time.deltaTime; // Apply gravity over time
+
+    }
+
+    private void HandleMovement()
+    {
+        if (_isKnockedDown) return;
+        var move = cameraTransform.TransformDirection(new Vector3(_moveInput.x, 0, _moveInput.y)).normalized;
+        var currentSpeed = _isCrouching ? crouchSpeed : _isSprinting ? sprintSpeed : walkSpeed;
+        var finalMove = move * currentSpeed;
+        finalMove.y = _verticalVelocity; 
+
+        var collisionFlags = _characterController.Move(finalMove * Time.deltaTime);
+        if ((collisionFlags & CollisionFlags.Above) != 0)
+        {
+            _verticalVelocity = initialFallSpeed; 
+        }
+    }
+
+    private void HandleCrouchTransition()
+    {
+        float currentHeight = _characterController.height;
+        if (Mathf.Abs(currentHeight - _targetHeight) < 0.01f)
+        {
+            _characterController.height = _targetHeight; // Snap to target height if close enough
+            return;
+        }
+
+
+        float newHeight = Mathf.Lerp(currentHeight, _targetHeight, Time.deltaTime * crouchTransitionSpeed);
+        _characterController.height = newHeight;
+        _characterController.center = Vector3.up * (newHeight / 2f); 
+
+        var cameraLocalPos = cameraTransform.localPosition;
+        cameraLocalPos.y = _targetHeight - cameraOffset;
+        cameraTransform.localPosition = Vector3.Lerp(
+            cameraTransform.localPosition, 
+            cameraLocalPos, 
+            Time.deltaTime * crouchTransitionSpeed);
+    }
+
+    private void HandleStateTransitions()
+    {
+        if (_isKnockedDown)
+        {
+            _currentState = PlayerState.KnockedDown;
+        }
+        else if (_isLevitating)
+        {
+            _currentState = PlayerState.Levitating;
+        }
+        else if (_isInvisible)
+        {
+            _currentState = PlayerState.Invisible;
+        }
+        else if (_isCrouching)
+        {
+            _currentState = PlayerState.Crouching;
+        }
+        else if (_isSprinting && _moveInput.magnitude > 0.1f)
+        {
+            _currentState = PlayerState.Running;
+        }
+        else if (_moveInput.magnitude > 0.1f)
+        {
+            _currentState = PlayerState.Walking;
+        }
+        else
+        {
+            _currentState = PlayerState.Standing;
+        }
+    }
+
+    private void HandleKnockback()
+    {
+        Vector3 move = _knockBackVelocity;
+        move.y = _verticalVelocity; // Apply vertical velocity for knockback
+
+        _characterController.Move(move * Time.deltaTime);
+
+        _knockBackVelocity = Vector3.Lerp(_knockBackVelocity, Vector3.zero, knockbackDecay * Time.deltaTime);
+        _knockbackTimer -= Time.deltaTime;
+        if (_knockbackTimer <= 0f && _knockBackVelocity.magnitude < 0.1f && _isGrounded)
+        {
+            _isKnockedDown = false;
+        }
+    }
+    
+
+    public void ReceiveKnockback(Vector3 direction, float force)
+    {
+        direction.y = 0f; // Ensure knockback is horizontal
+        direction.Normalize();
+
+        _knockBackVelocity = direction * force;
+        _verticalVelocity = Mathf.Clamp(force * 0.2f, 0f, 3f); // Add some vertical lift
+        _isKnockedDown = true;
+        _knockbackTimer = 0.5f; // Knockback lasts for
+    }
+
+    public void StartLevitation()
+    {
+        _isLevitating = true;
+    }
+
+    public void StopLevitation()
+    {
+        _isLevitating = false;
+    }
+
+    public void StartInvisibility()
+    {
+        _isInvisible = true;
+        gameObject.layer = LayerMask.NameToLayer("PlayerInvisible");
+    }
+
+    public void StopInvisibility()
+    {
+        _isInvisible = false;
+        gameObject.layer = LayerMask.NameToLayer("Player");
+    }
+}
