@@ -75,7 +75,10 @@ public class OnlineGameData : NetworkBehaviour
 
     private void PlayersListChanged()
     {
-        UpdatePlayersConnectedOnClientsRpc(onlinePlayersConnected.ToArray());
+        if (NetworkManager.Singleton.IsListening)
+        {
+            UpdatePlayersConnectedOnClientsRpc(onlinePlayersConnected.ToArray());
+        }
         NewPlayerOnList?.Invoke();
     }
 
