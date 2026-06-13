@@ -584,8 +584,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2c3cedb1fd1d8648b49d0827891430b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RelayManager
-  playJoinCodeInputField: {fileID: 0}
-  playerNameInputField: {fileID: 0}
   maxConnections: 4
 --- !u!4 &1491210438
 Transform:
