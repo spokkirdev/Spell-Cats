@@ -75,6 +75,8 @@ public class NetworkFPSMovement : NetworkBehaviour
         _targetHeight = standingHeight;
         _currentState = PlayerState.Standing;
 
+        GameServiceLocator.GetService<CursorControllerSystem>()?.HideCursor();
+
         if (_characterController == null)
         {
             Debug.LogError("CharacterController component is missing on this GameObject.");

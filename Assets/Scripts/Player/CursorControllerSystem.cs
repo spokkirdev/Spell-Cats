@@ -1,8 +1,16 @@
 using UnityEngine;
 
-public class CursorController : MonoBehaviour
+public class CursorControllerSystem : MonoBehaviour
 {
+    private void Awake()
+    {
+        GameServiceLocator.RegisterService<CursorControllerSystem>(this);
+    }
 
+    private void OnDestroy()
+    {
+        GameServiceLocator.UnregisterService<CursorControllerSystem>();
+    }
     public void ShowCursor()
     {
         Cursor.lockState = CursorLockMode.None; // Unlock the cursor

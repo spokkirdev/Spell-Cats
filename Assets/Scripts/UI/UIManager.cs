@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("Cursor Controller reference is missing in UIManager.");
         }
-        cursorController.GetComponent<CursorController>().HideCursor();
+        cursorController.GetComponent<CursorControllerSystem>().HideCursor();
     }
 
     private void OnEnable()
@@ -55,12 +55,12 @@ public class UIManager : MonoBehaviour
         if (radialMenu.GetComponent<RadialMenu>().ToggleMenu())
         {
             camera.GetComponent<CinemachineInputAxisController>().enabled = false;
-            cursorController.GetComponent<CursorController>().ShowCursor();
+            cursorController.GetComponent<CursorControllerSystem>().ShowCursor();
         }
         else
         {
             camera.GetComponent<CinemachineInputAxisController>().enabled = true;
-            cursorController.GetComponent<CursorController>().HideCursor();
+            cursorController.GetComponent<CursorControllerSystem>().HideCursor();
         }
     }
 }
