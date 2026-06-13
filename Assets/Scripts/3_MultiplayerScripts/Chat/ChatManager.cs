@@ -9,27 +9,32 @@ public class ChatManager : NetworkBehaviour
     [SerializeField] private TMPro.TMP_Text userListConnected;
     [SerializeField] private TMPro.TMP_InputField chatInputField;
 
+    private OnlineGameData _onlineGameData;
+
+
     public override void OnNetworkSpawn()
     {
+        _onlineGameData = GameServiceLocator.GetService<OnlineGameData>();
         UpdateUserList();
-        OnlineGameData.Singleton.NewPlayerOnList += UpdateUserList;
+        _onlineGameData.OnPlayersChanged += UpdateUserList;
+
     }
 
     public override void OnDestroy()
     {
         base.OnDestroy();
-        OnlineGameData.Singleton.NewPlayerOnList -= UpdateUserList;
+        _onlineGameData.OnPlayersChanged -= UpdateUserList;
     }
 
     private void UpdateUserList()
     {
-        UpdateUserConnected(OnlineGameData.Singleton.OnlinePlayersConnected.ToArray());
+        UpdateUserConnected(_onlineGameData.OnlinePlayersConnected.ToArray());
     }
 
 
     public void Out_SendChatMessage()
     {
-        SendMessageRpc(chatInputField.text, OnlineGameData.Singleton.PlayerName);
+        SendMessageRpc(chatInputField.text, _onlineGameData.PlayerName);
         chatInputField.text = "";
     }
 

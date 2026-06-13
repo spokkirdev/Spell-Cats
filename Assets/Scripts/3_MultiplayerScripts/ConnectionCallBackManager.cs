@@ -1,26 +1,24 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.Collections;
 
 public class ConnectionCallBackManager : MonoBehaviour
 {
-    private static ConnectionCallBackManager _singleton;
-    public static ConnectionCallBackManager Singleton => _singleton;
+
 
     private void Awake()
     {
-        if(_singleton != null && _singleton != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _singleton = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
+        GameServiceLocator.RegisterService(this);
     }
 
-    public void Start()
+    private void OnDestroy()
+    {
+        GameServiceLocator.UnregisterService<ConnectionCallBackManager>(); // falta esto
+        Unsubscribe();
+    }
+    public void Subscribe()
     {
         if(NetworkManager.Singleton != null)
         {
@@ -31,7 +29,7 @@ public class ConnectionCallBackManager : MonoBehaviour
         }
     }
 
-    public void OnDestroy()
+    public void Unsubscribe()
     {
         if(NetworkManager.Singleton != null)
         {
@@ -50,21 +48,65 @@ public class ConnectionCallBackManager : MonoBehaviour
     private void MethodOnClientStopped(bool isHost)
     {
         Debug.Log("Client Stopped, isHost: " + isHost);
-        SceneManager.LoadScene("3_OnlineMainMenu"); 
+        GameManager.Instance.ReturnToOnlineMenuAfterSession();
     }
     
 
     private void MethodOnClientConnected(ulong playerId)
     {
-        if(NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost)
+        Debug.Log($"[MethodOnClientConnected] playerId: {playerId}, localId: {NetworkManager.Singleton.LocalClientId}, isHost: {NetworkManager.Singleton.IsHost}");
+
+        if (NetworkManager.Singleton.IsHost)
         {
-            NetworkManager.Singleton.SceneManager.LoadScene("4_LobbyMenu", UnityEngine.SceneManagement.LoadSceneMode.Single);
+            if (NetworkManager.Singleton.LocalClientId != playerId) return;
+            StartCoroutine(LoadLobbyNextFrame());
         }
-        Debug.Log("Client Connected: " + playerId);
+        else
+        {
+            // La escena ya está cargada en este punto
+            // Solo necesitamos descargar el OnlineMenu
+            StartCoroutine(ClientCleanupAfterJoin());
+        }
     }
+
+    private IEnumerator ClientCleanupAfterJoin()
+    {
+        yield return new WaitUntil(() => 
+        NetworkManager.Singleton.IsConnectedClient &&
+        !NetworkManager.Singleton.ShutdownInProgress);
+
+        Scene onlineMenu = SceneManager.GetSceneByName("3_OnlineMainMenu");
+        if (onlineMenu.IsValid() && onlineMenu.isLoaded)
+        {
+            Debug.Log("[Client] Descargando OnlineMenu");
+            yield return SceneManager.UnloadSceneAsync(onlineMenu);
+        }
+
+        Scene lobby = SceneManager.GetSceneByName("4_LobbyMenu");
+        if (lobby.IsValid() && lobby.isLoaded)
+            SceneManager.SetActiveScene(lobby);
+
+        GameManager.Instance.ChangeGameState(EGameState.Lobby);
+        GameServiceLocator.GetService<LoadScreen_System>().ToggleLoaderScreen(false);
+    }  
+
+    private IEnumerator LoadLobbyNextFrame()
+    {
+        yield return new WaitUntil(() => 
+        !NetworkManager.Singleton.ShutdownInProgress &&
+        NetworkManager.Singleton.IsListening);
+        GameManager.Instance.RequestOnlineLobbyScene();
+    }
+
 
     private void MethodOnClientDisconnect(ulong playerId)
     {
-        Debug.Log("Client Disconnected: " + playerId);
+    
+        Debug.Log($"[Connection] Desconectado: {playerId}");
+        if (playerId == NetworkManager.Singleton.LocalClientId)
+        {
+            GameManager.Instance.ReturnToOnlineMenuAfterSession();
+        }
+    
     }
 }

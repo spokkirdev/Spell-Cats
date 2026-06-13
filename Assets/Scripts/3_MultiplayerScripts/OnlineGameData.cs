@@ -22,35 +22,43 @@ public class OnlinePlayerData : INetworkSerializable
 
 public class OnlineGameData : NetworkBehaviour
 {
-    private static OnlineGameData _singleton;
-    public static OnlineGameData Singleton => _singleton;
 
     [SerializeField] private string playerName;
 
     [SerializeField] private List <OnlinePlayerData> onlinePlayersConnected = new List<OnlinePlayerData>(); 
     public List<OnlinePlayerData> OnlinePlayersConnected => onlinePlayersConnected;
 
-    public Action NewPlayerOnList;
+    public Action OnPlayersChanged;
 
     private void Awake()
     {
-        if (_singleton == null)
-        {
-            _singleton = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(this.gameObject);
-        }
+        GameServiceLocator.RegisterService<OnlineGameData>(this);
     }
 
-    private void Start()
+    private void OnDestroy()
     {
+        GameServiceLocator.UnregisterService<OnlineGameData>();
+        UnsubscribeNetworkCallbacks();
+    }
+    private void UnsubscribeNetworkCallbacks()
+    {
+        if (NetworkManager.Singleton == null) return;
+        NetworkManager.Singleton.OnClientConnectedCallback -= PlayerConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= PlayerDisconnected;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        onlinePlayersConnected = new List<OnlinePlayerData>();
         NetworkManager.Singleton.OnClientConnectedCallback +=  PlayerConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += PlayerDisconnected;
-        onlinePlayersConnected = new List<OnlinePlayerData>();
     }
+
+    public override void OnNetworkDespawn()
+    {
+        UnsubscribeNetworkCallbacks();
+    }
+
 
     private void PlayerConnected(ulong clientId)
     {
@@ -79,7 +87,7 @@ public class OnlineGameData : NetworkBehaviour
         {
             UpdatePlayersConnectedOnClientsRpc(onlinePlayersConnected.ToArray());
         }
-        NewPlayerOnList?.Invoke();
+        OnPlayersChanged?.Invoke();
     }
 
     [Rpc(SendTo.NotServer, InvokePermission = RpcInvokePermission.Server)]
@@ -87,19 +95,10 @@ public class OnlineGameData : NetworkBehaviour
     {
         // TODO: esto se puede optimizar, no hace falta enviar toda la lista cada vez, pero bueno, es un ejemplo
         onlinePlayersConnected = playersConnected.ToList();
-        NewPlayerOnList?.Invoke();
+        OnPlayersChanged?.Invoke();
 
     }
 
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback -= PlayerConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= PlayerDisconnected;
-        }
-    }
 
     private void PlayerDisconnected(ulong clientId)
     {

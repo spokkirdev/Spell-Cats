@@ -7,102 +7,99 @@ using Unity.Services.Relay.Models;
 using System.Threading.Tasks;
 using Unity.Netcode.Transports.UTP;
 using System;
+using UnityEngine.SceneManagement;
 
 
 public class RelayManager : MonoBehaviour
 {   
 
-    [Header("UI References")]
-    [SerializeField] private TMPro.TMP_InputField playJoinCodeInputField;
-    [SerializeField] private TMPro.TMP_InputField playerNameInputField;
+
 
     [Header("Settings")]
     [SerializeField] private int maxConnections = 4;
 
-    async void Start()
+    private bool _initialized = false;
+
+    private void Awake()
     {
-        await UnityServices.InitializeAsync();
-
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-
-        NetworkManager.Singleton.OnClientStopped += ResetJoinCode;
-
+        GameServiceLocator.RegisterService<RelayManager>(this);
     }
 
-    private void ResetJoinCode(bool obj)
+    private void OnDestroy()
     {
-        JoinCode.Singleton.joinCodeText.text = "Join Code: ";
+        GameServiceLocator.UnregisterService<RelayManager>();
     }
 
-
-    public async void Out_CreateRoom()
+    public async Task InitializeAsync()
     {
-        string joinCode = await StartHostWitchRelay(maxConnections);
-        JoinCode.Singleton.joinCodeText.text = "Join Code: " + joinCode;
-        Debug.Log($"Created room with join code: {joinCode}");
-    }
-
-    private async Task<string> StartHostWitchRelay(int maxConnections = 4)
-    {
-        Allocation allocation;
+        if (_initialized) return;
         try
         {
-            allocation = await RelayService.Instance.CreateAllocationAsync(maxConnections);
-            
-        }catch
+            await UnityServices.InitializeAsync();
+            if (!AuthenticationService.Instance.IsSignedIn)
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+            _initialized = true;
+            Debug.Log("[Relay] Servicios inicializados");
+        }
+        catch (Exception e)
         {
-            Debug.LogError("Relay create allocation failed");
+            Debug.LogError($"[Relay] Error inicializando: {e.Message}");
             throw;
         }
-
-        if (allocation != null)
-        {
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
-            string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            Debug.Log($"Join code: {joinCode}");
-            return NetworkManager.Singleton.StartHost() ? joinCode : null;
-        } 
-        else
-        {
-            Debug.LogError("Allocation is null");
-            return "Error";
-        }
-
     }
 
-    public async void Out_JoinRoom()
-    {
-        await JoinHostWithRelay(playJoinCodeInputField.text);
-    }
 
-    private async Task<bool> JoinHostWithRelay(string joinCode)
+    public async Task<string> CreateRoomAsync(int maxPlayers)
     {
-        if (joinCode == null || joinCode.Length == 0)
-        {
-            Debug.LogError("Join code is null or empty");
-            return false;
-        }
-
-        JoinAllocation joinAllocation;
         try
         {
-            joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            var allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayers);
+            var joinCode   = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+            NetworkManager.Singleton
+                .GetComponent<UnityTransport>()
+                .SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
+
+            if (!NetworkManager.Singleton.StartHost())
+                throw new Exception("StartHost() devolvió false");
+
+            NetworkManager.Singleton.SceneManager
+                .SetClientSynchronizationMode(LoadSceneMode.Additive);
+
+            Debug.Log($"[Relay] Sala creada. Join code: {joinCode}");
+            return joinCode;
         }
-        catch
+        catch (Exception e)
         {
-            Debug.LogError("Relay join allocation failed");
+            Debug.LogError($"[Relay] Error creando sala: {e.Message}");
             throw;
         }
+    }
 
-        if (joinAllocation != null)
+   public async Task<bool> JoinRoomAsync(string joinCode)
+    {
+        try
         {
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(joinAllocation, "dtls"));
-            return NetworkManager.Singleton.StartClient();
+            var joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+
+            NetworkManager.Singleton
+                .GetComponent<UnityTransport>()
+                .SetRelayServerData(AllocationUtils.ToRelayServerData(joinAllocation, "dtls"));
+
+            bool started = NetworkManager.Singleton.StartClient();
+            if (!started) return false;
+
+            NetworkManager.Singleton.SceneManager
+                .SetClientSynchronizationMode(LoadSceneMode.Additive);
+
+            return true;
         }
-        else
+        catch (Exception e)
         {
-            Debug.LogError("Join allocation is null");
+            Debug.LogError($"[Relay] Error uniéndose: {e.Message}");
             return false;
         }
     }
+
 }

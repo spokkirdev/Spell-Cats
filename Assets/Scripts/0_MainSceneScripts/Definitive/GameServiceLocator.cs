@@ -15,6 +15,7 @@ public class GameServiceLocator : MonoBehaviour
             return;
         }
         _services[type] = service;
+        Debug.Log($"Service of type {type} registered successfully.");
     }
 
     public static void UnregisterService<T>()
