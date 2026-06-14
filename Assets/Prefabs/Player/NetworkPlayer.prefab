@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 2347168023206793868}
   - component: {fileID: 6255619038326922028}
   - component: {fileID: 1406902787807138735}
+  - component: {fileID: 7920842429839118131}
   m_Layer: 6
   m_Name: SoundTrigger
   m_TagString: PlayerSound
@@ -143,6 +144,52 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7920842429839118131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143645839566025445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkTransform
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 0
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 1
+  TickSyncChildren: 0
+  UseUnreliableDeltas: 0
+  SyncPositionX: 0
+  SyncPositionY: 0
+  SyncPositionZ: 0
+  SyncRotAngleX: 0
+  SyncRotAngleY: 0
+  SyncRotAngleZ: 0
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &5862261653547339357
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,6 +205,7 @@ GameObject:
   - component: {fileID: -916184071521813239}
   - component: {fileID: 4434719764679203914}
   - component: {fileID: 4520775039712845973}
+  - component: {fileID: 9031363466213739242}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -243,7 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 229780711
+  GlobalObjectIdHash: 1927153320
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -352,6 +400,27 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   pickUpAction: {fileID: 2797128712290567778, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+--- !u!114 &9031363466213739242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5862261653547339357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0943d2c6b94034b8d159ae10fa9976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkPlayerSound
+  ShowTopMostFoldoutHeaderGroup: 1
+  triggerTransitionTime: 8
+  crouchingTriggerScale: 0.5
+  walkingTriggerScale: 10
+  runningTriggerScale: 20
+  standingTriggerScale: 1
+  levitateTriggerScale: 0
+  soundTrigger: {fileID: 4143645839566025445}
+  playerMovement: {fileID: -916184071521813239}
 --- !u!1 &7394763165901550905
 GameObject:
   m_ObjectHideFlags: 0

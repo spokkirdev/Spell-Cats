@@ -13,11 +13,11 @@ public class MeleeAttack : Attack
     [SerializeField] private float cooldownTime = 1.0f;
 
     private float _lastAttackTime;
-    private AttackEffect[] _attackEffects;
+    private IAttackEffect[] _attackEffects;
 
     private void Awake()
     {
-        _attackEffects = GetComponents<AttackEffect>().OrderBy(e => e.Priority).ToArray();
+        _attackEffects = GetComponents<IAttackEffect>().OrderBy(e => e.Priority).ToArray();
     }
 
     /*
