@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6602321547977186697}
   - component: {fileID: 7786630105450081297}
   - component: {fileID: 184529801961761581}
-  - component: {fileID: 121336334808162432}
   - component: {fileID: 1170937168988028416}
   - component: {fileID: 4797743901183846618}
   - component: {fileID: 650000378950207992}
@@ -21,6 +20,9 @@ GameObject:
   - component: {fileID: 3027295050501975550}
   - component: {fileID: 1610541389288463734}
   - component: {fileID: 7305688425779646912}
+  - component: {fileID: 4862662215444751303}
+  - component: {fileID: 5911019010736798902}
+  - component: {fileID: 8195877124868072398}
   m_Layer: 0
   m_Name: 3_NetworkEnemy
   m_TagString: Untagged
@@ -147,26 +149,6 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &121336334808162432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36272973198818586}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d2944a205f7fb4aab19171615493c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VisionSensor
-  visionRange: 10
-  visionAngle: 90
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 256
 --- !u!114 &1170937168988028416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkKnockbackEffect
   ShowTopMostFoldoutHeaderGroup: 1
-  knockbackForce: 10
+  knockbackForce: 100
 --- !u!114 &7305688425779646912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,6 +307,45 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &4862662215444751303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36272973198818586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 359d605930615154690d210407b37050, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundSensor
+--- !u!114 &5911019010736798902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36272973198818586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde57a0aa8f2f1448a40f0bcb7eaa42f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkDropEffect
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &8195877124868072398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 36272973198818586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b18d555051d56d149b8cdc127a9ea603, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkDamageEffect
+  ShowTopMostFoldoutHeaderGroup: 1
+  damageAmount: 10
 --- !u!1 &2178662830894218075
 GameObject:
   m_ObjectHideFlags: 0

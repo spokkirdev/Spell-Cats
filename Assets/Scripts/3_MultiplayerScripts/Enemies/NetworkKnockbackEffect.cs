@@ -6,7 +6,7 @@ public class NetworkKnockbackEffect: NetworkBehaviour, IAttackEffect
     [Header("Settings")]
     [SerializeField] private float knockbackForce = 10f;
 
-    public int Priority => 0;
+    public int Priority => 5;
 
     public void Apply(Transform target, Transform attacker)
     {
@@ -35,10 +35,10 @@ public class NetworkKnockbackEffect: NetworkBehaviour, IAttackEffect
     }
 
 
-    [Rpc(SendTo.Everyone, InvokePermission =RpcInvokePermission.Everyone)]
+    [Rpc(SendTo.Everyone, InvokePermission =RpcInvokePermission.Server)]
     private void ApplyKnockbackRpc(ulong targetNetworkId, Vector3 direction, float force)
     {
-         if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(targetNetworkId, out NetworkObject targetNetObj))
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(targetNetworkId, out NetworkObject targetNetObj))
         {
             Debug.LogWarning($"[KnockbackEffect] No se encontró NetworkObject con ID {targetNetworkId}");
             return;

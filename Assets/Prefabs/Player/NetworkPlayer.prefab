@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 4434719764679203914}
   - component: {fileID: 4520775039712845973}
   - component: {fileID: 9031363466213739242}
+  - component: {fileID: 677085154670178207}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -291,7 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1927153320
+  GlobalObjectIdHash: 229780711
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -421,6 +422,20 @@ MonoBehaviour:
   levitateTriggerScale: 0
   soundTrigger: {fileID: 4143645839566025445}
   playerMovement: {fileID: -916184071521813239}
+--- !u!114 &677085154670178207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5862261653547339357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 452623011f9468f4687b810f554c5df4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkHealthComponent
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
 --- !u!1 &7394763165901550905
 GameObject:
   m_ObjectHideFlags: 0
