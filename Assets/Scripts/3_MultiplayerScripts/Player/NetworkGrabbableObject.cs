@@ -9,6 +9,8 @@ public class NetworkGrabbableObject : NetworkBehaviour
     private Rigidbody _jointRigidbody;
     private ConfigurableJoint _joint;
 
+    private GameObject _playerHoldingObject;
+
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -18,14 +20,24 @@ public class NetworkGrabbableObject : NetworkBehaviour
         }
     }
 
+    public override void OnNetworkDespawn()
+    {
+        if (_playerHoldingObject != null)
+        {
+            _playerHoldingObject.GetComponent<NetworkPlayerPickUpDrop>().ForceDrop(); // Ensure the player drops the object when it despawns
+        }
+    }
+
     /**
     * Method to grab the object, creating a joint to the hold point.
     * @param holdPoint The transform where the object will be held.
+    * @param playerHoldingObject The player GameObject that is holding the object.
     */
-    public void Grab(Transform holdPoint)
+    public void Grab(Transform holdPoint, GameObject playerHoldingObject)
     {
-
+        RequestOwnershipRpc(playerHoldingObject.GetComponent<NetworkObject>().OwnerClientId, this.GetComponent<NetworkObject>().NetworkObjectId);
         this._holdPoint = holdPoint;
+        this._playerHoldingObject = playerHoldingObject;
 
         _jointObject = new GameObject("AttachmentPoint");
         _jointObject.transform.position = holdPoint.position;
@@ -74,6 +86,7 @@ public class NetworkGrabbableObject : NetworkBehaviour
             Destroy(_jointObject);
             _jointObject = null;
         }
+        _playerHoldingObject = null;
     }
 
     private void FixedUpdate()
@@ -82,6 +95,21 @@ public class NetworkGrabbableObject : NetworkBehaviour
         {
             _jointObject.transform.position = _holdPoint.position;
             _jointObject.transform.rotation = _holdPoint.rotation;
+        }
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void RequestOwnershipRpc(ulong requestingClientId, ulong objectNetworkId)
+    {
+        if (!IsServer) return;
+
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectNetworkId, out NetworkObject netObj))
+        {
+            netObj.ChangeOwnership(requestingClientId);
+        }
+        else
+        {
+            Debug.LogWarning($"No NetworkObject found with ID {objectNetworkId}");
         }
     }
 }

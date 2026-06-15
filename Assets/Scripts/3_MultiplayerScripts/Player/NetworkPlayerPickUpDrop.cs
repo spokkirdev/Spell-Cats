@@ -47,7 +47,7 @@ public class NetworkPlayerPickUpDrop : NetworkBehaviour
             if (hit.transform.TryGetComponent(out NetworkGrabbableObject grabbableObject))
             {
                 Debug.Log("Picked up: " + hit.collider.gameObject.name);
-                grabbableObject.Grab(holdPoint);
+                grabbableObject.Grab(holdPoint, this.gameObject);
                 _heldObject = hit.collider.gameObject;
                 _isHoldingObject = true;
             }
