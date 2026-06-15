@@ -207,6 +207,7 @@ GameObject:
   - component: {fileID: 4520775039712845973}
   - component: {fileID: 9031363466213739242}
   - component: {fileID: 677085154670178207}
+  - component: {fileID: -4496964404956631613}
   m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -292,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 229780711
+  GlobalObjectIdHash: 1927153320
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -436,6 +437,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NetworkHealthComponent
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 100
+  _currentHealth:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+--- !u!114 &-4496964404956631613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5862261653547339357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ad4974a4b3811c48825ca0bdcd0cf5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpellManager
+  spells: []
+  activeSpell: {fileID: 11400000, guid: 6f6dcc405b7552d4583d166fed84c037, type: 2}
+  spellCastPoint: {fileID: 2048356807935587907}
+  castSpellAction: {fileID: 1605844295157780844, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1 &7394763165901550905
 GameObject:
   m_ObjectHideFlags: 0

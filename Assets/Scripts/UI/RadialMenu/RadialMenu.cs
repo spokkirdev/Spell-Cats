@@ -12,8 +12,20 @@ public class RadialMenu : MonoBehaviour
 
     private List<RadialMenuEntry> _entries;
 
-    void Start()
+    private void Awake()
     {
+        GameServiceLocator.RegisterService<RadialMenu>(this);
+    }
+
+    private void OnDestroy()
+    {
+        GameServiceLocator.UnregisterService<RadialMenu>();
+    }
+
+    public void Initialize(SpellManager spellManager)
+    {
+        this.spellManager = spellManager;
+    
         _entries = new List<RadialMenuEntry>();
     }
 

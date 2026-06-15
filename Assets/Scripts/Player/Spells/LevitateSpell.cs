@@ -6,12 +6,12 @@ public class LevitateSpell : Spell
     public override void Cast(Transform caster)
     {
         Debug.Log($"{spellName} cast by {caster.name}");
-        caster.GetComponent<FPSMovement>().StartLevitation();     
+        caster.GetComponent<NetworkFPSMovement>().StartLevitation();     
     }
 
     public override void Stop(Transform caster)
     {
         Debug.Log($"{spellName} stopped by {caster.name}");
-        caster.GetComponent<FPSMovement>().StopLevitation();
+        caster.GetComponent<NetworkFPSMovement>().StopLevitation();
     }
 }

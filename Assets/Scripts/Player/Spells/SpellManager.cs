@@ -1,8 +1,9 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class SpellManager : MonoBehaviour
+public class SpellManager : NetworkBehaviour
 {
     [SerializeField] private Spell[] spells;
     [SerializeField] private Spell activeSpell;
@@ -12,6 +13,18 @@ public class SpellManager : MonoBehaviour
 
     private bool _canCast = true;
 
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner) return;
+        GameServiceLocator.RegisterService<SpellManager>(this);
+    }
+
+
+    public void OnNetworkDestroy()
+    {
+        if (!IsOwner) return;
+        GameServiceLocator.UnregisterService<SpellManager>();
+    }
     private void OnEnable()
     {
         castSpellAction.action.performed += OnCastSpell;
@@ -20,6 +33,16 @@ public class SpellManager : MonoBehaviour
     private void OnDisable()
     {
         castSpellAction.action.performed -= OnCastSpell;
+    }
+
+    private void Start()
+    {
+        if (!IsOwner) return;
+        RadialMenu radialMenu = GameServiceLocator.GetService<RadialMenu>();
+        if (radialMenu != null)
+        {
+            radialMenu.Initialize(this);
+        }
     }
 
 

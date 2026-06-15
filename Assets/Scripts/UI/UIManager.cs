@@ -5,37 +5,29 @@ using Unity.Cinemachine;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
 
 
 
     [Header("References")]
     [SerializeField] private GameObject radialMenu;
-    [SerializeField] private GameObject cursorController;
     [SerializeField] private GameObject camera;
     [SerializeField] private InputActionReference openRadialMenuAction;
 
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-        if (radialMenu == null)
-        {
-            Debug.LogError("Radial Menu reference is missing in UIManager.");
-        }
-        if (cursorController == null)
-        {
-            Debug.LogError("Cursor Controller reference is missing in UIManager.");
-        }
-        cursorController.GetComponent<CursorControllerSystem>().HideCursor();
+        GameServiceLocator.RegisterService<UIManager>(this);
+        
+    }
+
+    private void OnDestroy()
+    {
+        GameServiceLocator.UnregisterService<UIManager>();
+    }
+
+    private void Start()
+    {
+        radialMenu = GameServiceLocator.GetService<RadialMenu>().gameObject;
     }
 
     private void OnEnable()
@@ -54,13 +46,13 @@ public class UIManager : MonoBehaviour
     {
         if (radialMenu.GetComponent<RadialMenu>().ToggleMenu())
         {
-            camera.GetComponent<CinemachineInputAxisController>().enabled = false;
-            cursorController.GetComponent<CursorControllerSystem>().ShowCursor();
+            ((Component)camera.GetComponent<CinemachineBrain>().ActiveVirtualCamera).GetComponent<CinemachineInputAxisController>().enabled = false;
+            GameServiceLocator.GetService<CursorControllerSystem>().ShowCursor();
         }
         else
         {
-            camera.GetComponent<CinemachineInputAxisController>().enabled = true;
-            cursorController.GetComponent<CursorControllerSystem>().HideCursor();
+            ((Component)camera.GetComponent<CinemachineBrain>().ActiveVirtualCamera).GetComponent<CinemachineInputAxisController>().enabled = true;
+            GameServiceLocator.GetService<CursorControllerSystem>().HideCursor();
         }
     }
 }

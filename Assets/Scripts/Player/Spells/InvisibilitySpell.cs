@@ -6,12 +6,12 @@ public class InvisibilitySpell : Spell
     public override void Cast(Transform caster)
     {
         Debug.Log($"{spellName} cast by {caster.name}");
-        caster.GetComponent<FPSMovement>().StartInvisibility();
+        caster.GetComponent<NetworkFPSMovement>().StartInvisibility();
     }
 
     public override void Stop(Transform caster)
     {
         Debug.Log($"{spellName} stopped by {caster.name}");
-        caster.GetComponent<FPSMovement>().StopInvisibility();
+        caster.GetComponent<NetworkFPSMovement>().StopInvisibility();
     }
 }
