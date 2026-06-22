@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using Unity.Netcode;
+using System;
 
-/**
+
 public enum EnemyState
 {
     Waiting,
@@ -10,13 +11,14 @@ public enum EnemyState
     Chasing,
     Attacking
 }
-**/
+
 
 public class NetworkPatrollingEnemy : NetworkBehaviour
 {
 
     [Header("References")]
     [SerializeField] private GameObject patrolPointsParent;
+    [SerializeField] private Animator animator;
 
     [Header("Settings")]
     [SerializeField] private float waitTime = 2f;
@@ -67,8 +69,29 @@ public class NetworkPatrollingEnemy : NetworkBehaviour
     {
         if (!IsServer) return;
         Patrol();
+        UpdateAnimator();
     }
 
+    private void UpdateAnimator()
+    {
+        switch (_currentNetworkState.Value)
+        {
+            case EnemyState.Waiting:
+                // Set waiting animation
+                animator.SetBool("IsMoving", false);
+                break;
+            case EnemyState.Patrolling:
+                // Set patrolling animation
+                animator.SetBool("IsMoving", true);
+                animator.SetBool("Chasing", false);
+                break;
+            case EnemyState.Chasing:
+                // Set chasing animation
+                animator.SetBool("Chasing", true);
+                break;
+        }
+        
+    }
 
     private void Patrol()
     {
@@ -111,6 +134,25 @@ public class NetworkPatrollingEnemy : NetworkBehaviour
         _navMeshAgent.speed = patrolSpeed;
         _currentNetworkState.Value = EnemyState.Patrolling;
         GoToNextPatrolPoint();
+    }
+
+    public void PerformAttackAnimation()
+    {
+        if (_currentNetworkState.Value != EnemyState.Attacking)
+        {
+            _currentNetworkState.Value = EnemyState.Attacking;
+            animator.SetBool("Attacking", true);
+            StartCoroutine(ResetAttackAnimation());
+        }
+    }
+
+    private IEnumerator ResetAttackAnimation()
+    {
+
+        yield return new WaitForSeconds(1f); 
+        animator.SetBool("Attacking", false);
+        _currentNetworkState.Value = EnemyState.Chasing; 
+        
     }
 
 }

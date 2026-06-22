@@ -70,6 +70,7 @@ public class NetworkEnemy : NetworkBehaviour
         {
             if (attack.CanAttack(target))
             {
+                _patrollingEnemy.PerformAttackAnimation();
                 attack.PerformAttack(target);
                 return true;
             }

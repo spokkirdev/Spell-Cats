@@ -143,8 +143,10 @@ public class NetworkFPSMovement : NetworkBehaviour
     {
         if (_isCrouching)
         {
+            Debug.Log("Attempting to stand up from crouch...");
             if (!CanStandUp())
             {
+                Debug.Log("Cannot stand up due to an obstacle above.");
                 return; 
             }
             _targetHeight = standingHeight;
@@ -162,7 +164,8 @@ public class NetworkFPSMovement : NetworkBehaviour
             transform.position + _characterController.center, 
             transform.position + (Vector3.up * _characterController.height / 2f), 
             _characterController.radius, 
-            Vector3.up
+            Vector3.up,
+            standingHeight - crouchingHeight
             );
     }
 

@@ -1,13 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-public enum EnemyState
-{
-    Waiting,
-    Patrolling,
-    Chasing,
-    Attacking
-}
 
 public class PatrollingEnemy : MonoBehaviour
 {
