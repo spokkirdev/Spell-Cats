@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: LevitateSpell
   m_EditorClassIdentifier: Assembly-CSharp::LevitateSpell
   spellName: Levitation
-  spellIcon: {fileID: 0}
+  spellIcon: {fileID: 21300000, guid: 2b3889a2bb9beb444adf6734821e1c02, type: 3}
   cooldownTime: 1
   effectDuration: 5

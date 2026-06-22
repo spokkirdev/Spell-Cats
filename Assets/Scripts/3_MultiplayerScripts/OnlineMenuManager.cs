@@ -10,6 +10,14 @@ public class OnlineMenuManager : MonoBehaviour
 
     [SerializeField] private TMPro.TMP_InputField joinCodeInput;
 
+    [SerializeField] private  GameObject joinGameButton;
+      [SerializeField] private  GameObject joinGameButton2;
+    [SerializeField] private GameObject hostGameButton;
+    [SerializeField] private GameObject RoomCodeText;
+    [SerializeField] private GameObject RoomCodeField;
+    [SerializeField] private TMPro.TMP_Text JoinGame_BackText;
+
+
     [SerializeField] private TMPro.TMP_Text joinCodeDisplay;
 
     private OnlineGameData _onlineGameData;
@@ -56,6 +64,23 @@ public class OnlineMenuManager : MonoBehaviour
         #else
             Application.Quit();
         #endif
+    }
+
+    public void Out_ToggleJoinGameButton()
+    {
+        if (JoinGame_BackText.text == "Join Game")
+        {
+            JoinGame_BackText.text = "Back";
+        }
+        else
+        {
+            JoinGame_BackText.text = "Join Game";
+        }
+        joinGameButton2.SetActive(!joinGameButton2.activeSelf);
+        hostGameButton.SetActive(!hostGameButton.activeSelf);
+        RoomCodeText.SetActive(!RoomCodeText.activeSelf);
+        RoomCodeField.SetActive(!RoomCodeField.activeSelf);
+        
     }
 
         
