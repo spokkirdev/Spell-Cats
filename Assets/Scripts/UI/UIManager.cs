@@ -72,7 +72,7 @@ public class UIManager : MonoBehaviour
         {
             if (!GameServiceLocator.GetService<NetworkTimer>().IsTimerRunning)
             {
-                GameServiceLocator.GetService<NetworkTimer>().StartTimerServerRpc(120f);
+                GameServiceLocator.GetService<NetworkTimer>().StartTimerServerRpc(20f);
                 return;
             }
             double remainingTime = GameServiceLocator.GetService<NetworkTimer>().GetRemainingTime();

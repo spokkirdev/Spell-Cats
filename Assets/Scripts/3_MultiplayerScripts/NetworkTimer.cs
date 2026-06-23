@@ -3,6 +3,8 @@ using Unity.Netcode;
 
 public class NetworkTimer : NetworkBehaviour
 {
+
+    [SerializeField] private GameObject endGameCanvas;
     private NetworkVariable<double> _endTime =
         new NetworkVariable<double>(
             0,
@@ -35,7 +37,7 @@ public class NetworkTimer : NetworkBehaviour
         if (remainingTime <= 0)
         {
             _endTime.Value = 0; 
-            OnTimerFinished();
+            OnTimerFinishedClientRpc();
         }
     }
 
@@ -53,8 +55,10 @@ public class NetworkTimer : NetworkBehaviour
         _endTime.Value = 0;
     }
 
-    private void OnTimerFinished()
+    [ClientRpc]
+    private void OnTimerFinishedClientRpc()
     {
+        endGameCanvas.SetActive(true);
         Debug.Log("[NetworkTimer] Timer finished!");
     }
 

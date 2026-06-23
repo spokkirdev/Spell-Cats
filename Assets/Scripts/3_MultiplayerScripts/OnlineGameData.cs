@@ -142,6 +142,18 @@ public class OnlineGameData : NetworkBehaviour
         set {playerName = value;}
     }
 
+    public bool CheckAllPlayersReady()
+    {
+        foreach (var player in onlinePlayersConnected)
+        {
+            if (!player.isReady)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     
 }

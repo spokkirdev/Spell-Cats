@@ -30,6 +30,9 @@ public class LobbyMenuManager : MonoBehaviour
     public void Out_NewGame()
     {
         if (!NetworkManager.Singleton.IsHost) return;
-        GameManager.Instance.RequestOnlineGameScene();
+        if (_onlineGameData.CheckAllPlayersReady())
+        {
+            GameManager.Instance.RequestOnlineGameScene();
+        }
     }
 }
