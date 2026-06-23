@@ -17,6 +17,10 @@ public class NetworkCatSpawner : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
+        if (GameServiceLocator.TryGetService<NetworkCatSpawner>())
+        {
+            GameServiceLocator.UnregisterService<NetworkCatSpawner>();
+        }
         GameServiceLocator.RegisterService<NetworkCatSpawner>(this);
         _catSpawnPoints = catSpawnPointParent.GetComponentsInChildren<Transform>();
 
@@ -28,8 +32,10 @@ public class NetworkCatSpawner : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-        if (!IsServer) return;
-        GameServiceLocator.UnregisterService<NetworkCatSpawner>();
+        if (GameServiceLocator.TryGetService<NetworkCatSpawner>())
+        {
+            GameServiceLocator.UnregisterService<NetworkCatSpawner>();
+        }
     }
 
     private void SpawnCat()

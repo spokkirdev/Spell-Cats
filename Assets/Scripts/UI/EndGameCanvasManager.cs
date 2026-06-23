@@ -8,5 +8,14 @@ public class EndGameCanvasManager : MonoBehaviour
     private void OnEnable()
     {
         pointsText.text = GameServiceLocator.GetService<NetworkPoints>().Points.Value.ToString();
+        GameServiceLocator.GetService<CursorControllerSystem>().ShowCursor();
+        Time.timeScale = 0f;
+    }
+
+    public void Out_GoToOnlineMenu()
+    {
+        GameServiceLocator.GetService<RelayManager>().CloseRoomCoroutine();
+        GameManager.Instance.RequestOnlineMenuScene();
+        Time.timeScale = 1f;
     }
 }

@@ -28,7 +28,7 @@ public class NetworkTimer : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsServer || !IsTimerRunning)
+        if (!IsServer || !IsTimerRunning || NetworkManager.Singleton == null)
             return;
 
         double remainingTime =

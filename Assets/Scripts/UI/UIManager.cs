@@ -57,7 +57,8 @@ public class UIManager : MonoBehaviour
     {
         openRadialMenuAction.action.performed -= ToggleRadialMenu;
         openRadialMenuAction.action.canceled -= ToggleRadialMenu;
-        GameServiceLocator.GetService<NetworkPoints>().Points.OnValueChanged -= UpdateScoreText;
+        UnSubscribeNetworkPoints();
+
 
     }
 
@@ -68,7 +69,7 @@ public class UIManager : MonoBehaviour
 
     private void UpdateTimerDisplay()
     {
-       if (GameServiceLocator.GetService<NetworkTimer>() != null && timerText != null)
+       if (GameServiceLocator.TryGetService<NetworkTimer>() && timerText != null)
         {
             if (!GameServiceLocator.GetService<NetworkTimer>().IsTimerRunning)
             {
@@ -128,6 +129,14 @@ public class UIManager : MonoBehaviour
             default:
                 SetHeartsActive(0);
                 break;
+        }
+    }
+
+    public void UnSubscribeNetworkPoints()
+    {
+        if (GameServiceLocator.TryGetService<NetworkPoints>())
+        {
+            GameServiceLocator.GetService<NetworkPoints>().Points.OnValueChanged -= UpdateScoreText;
         }
     }
 

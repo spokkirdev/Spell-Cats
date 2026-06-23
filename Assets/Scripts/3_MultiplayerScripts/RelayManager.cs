@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Unity.Netcode.Transports.UTP;
 using System;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 public class RelayManager : MonoBehaviour
@@ -52,6 +53,12 @@ public class RelayManager : MonoBehaviour
 
     public async Task<string> CreateRoomAsync(int maxPlayers)
     {
+        if (NetworkManager.Singleton.IsListening)
+        {
+            Debug.LogWarning("NetworkManager aún activo, forzando shutdown...");
+            NetworkManager.Singleton.Shutdown();
+            await Task.Delay(300);
+        }
         try
         {
             var allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayers);
@@ -102,4 +109,20 @@ public class RelayManager : MonoBehaviour
         }
     }
 
+
+    public IEnumerator CloseRoomCoroutine()
+{
+    Debug.Log("[Relay] Cerrando sala...");
+
+    if (NetworkManager.Singleton != null)
+    {
+        NetworkManager.Singleton.Shutdown();
+    }
+
+    yield return new WaitUntil(() =>
+        NetworkManager.Singleton == null ||
+        !NetworkManager.Singleton.IsListening);
+
+    Debug.Log("[Relay] Shutdown completado");
+}
 }

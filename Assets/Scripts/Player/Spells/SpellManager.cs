@@ -20,7 +20,7 @@ public class SpellManager : NetworkBehaviour
     }
 
 
-    public void OnNetworkDestroy()
+    public override void OnNetworkDespawn()
     {
         if (!IsOwner) return;
         GameServiceLocator.UnregisterService<SpellManager>();

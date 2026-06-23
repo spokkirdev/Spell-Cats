@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -64,5 +65,22 @@ public class NetworkHealthComponent : NetworkBehaviour
     {
         Debug.Log($"{gameObject.name} has died.");
         // Implement death logic here (e.g., destroy the object, play animation, etc.)
+
+        if (!IsServer)
+            return;
+
+        RespawnCoroutine();
     }
+
+    private void RespawnCoroutine()
+    {
+        ulong ownerId = OwnerClientId;
+
+        NetworkObject.Despawn(true);
+
+
+        GameServiceLocator.GetService<NetworkPlayerSpawner>()
+            .SpawnPlayer(ownerId);
+    }
+
 }

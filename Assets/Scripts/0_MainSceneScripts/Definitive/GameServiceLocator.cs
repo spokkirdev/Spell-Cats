@@ -41,4 +41,12 @@ public class GameServiceLocator : MonoBehaviour
         Debug.LogError($"Service of type {type} is not registered.");
         return default;
     }
+
+    public static bool TryGetService<T>()
+    {
+        var type = typeof(T);
+        return _services.ContainsKey(type);
+    }
 }
+
+
