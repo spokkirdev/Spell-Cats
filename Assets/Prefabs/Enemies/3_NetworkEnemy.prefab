@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkDamageEffect
   ShowTopMostFoldoutHeaderGroup: 1
-  damageAmount: 10
+  damageAmount: 20
 --- !u!1 &2178662830894218075
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using Unity.Netcode;
 public class NetworkCat : NetworkBehaviour
 {
 
+    [SerializeField] private int pointsToAdd = 50;
     public void Collect()
     {
         if (!IsServer) return;
@@ -14,6 +15,9 @@ public class NetworkCat : NetworkBehaviour
         {
             catSpawner.CollectCat();
         }
+
+        // Add points to the player's score
+        GameServiceLocator.GetService<NetworkPoints>().AddPoints(pointsToAdd);
 
         // Destroy the cat object across the network
         GetComponent<NetworkObject>().Despawn();

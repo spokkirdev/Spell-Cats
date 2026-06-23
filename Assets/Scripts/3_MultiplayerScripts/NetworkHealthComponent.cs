@@ -21,6 +21,12 @@ public class NetworkHealthComponent : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         _currentHealth.OnValueChanged += HandleHealthChanged;
+        if (NetworkObject.OwnerClientId == NetworkManager.Singleton.LocalClientId)
+        {
+            Debug.Log($"[NetworkHealthComponent] Registering service for clientId: {NetworkManager.Singleton.LocalClientId}");
+            GameServiceLocator.RegisterService<NetworkHealthComponent>(this);
+            GameServiceLocator.GetService<UIManager>().InitializeHealthBar();
+        }
         if (IsServer)
         {
             _currentHealth.Value = maxHealth;
@@ -30,6 +36,11 @@ public class NetworkHealthComponent : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         _currentHealth.OnValueChanged -= HandleHealthChanged;
+        if (NetworkObject.OwnerClientId == NetworkManager.Singleton.LocalClientId)
+        {
+            Debug.Log($"[NetworkHealthComponent] Unregistering service for clientId: {NetworkManager.Singleton.LocalClientId}");
+            GameServiceLocator.UnregisterService<NetworkHealthComponent>();
+        }
     }
 
     public void TakeDamage(float damage)
@@ -42,6 +53,7 @@ public class NetworkHealthComponent : NetworkBehaviour
             OnDeath();
         }
     }
+    
 
     private void HandleHealthChanged(float previous, float current)
     {

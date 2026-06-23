@@ -3,15 +3,23 @@ using UnityEngine;
 
 public class NetworkPoints : NetworkBehaviour
 {
-    private NetworkVariable<int> _points = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> Points = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    public int Points => _points.Value;
+    public override void OnNetworkSpawn()
+    {
+        GameServiceLocator.RegisterService<NetworkPoints>(this);
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        GameServiceLocator.UnregisterService<NetworkPoints>();
+    }
 
     public void AddPoints(int amount)
     {
         if (IsServer)
         {
-            _points.Value += amount;
+            Points.Value += amount;
         }
     }
 
@@ -19,7 +27,7 @@ public class NetworkPoints : NetworkBehaviour
     {
         if (IsServer)
         {
-            _points.Value = 0;
+            Points.Value = 0;
         }
     }
 }
