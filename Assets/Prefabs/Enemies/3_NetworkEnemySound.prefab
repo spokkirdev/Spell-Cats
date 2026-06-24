@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 5911019010736798902}
   - component: {fileID: 8195877124868072398}
   m_Layer: 0
-  m_Name: 3_NetworkEnemy
+  m_Name: 3_NetworkEnemySound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

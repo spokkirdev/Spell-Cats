@@ -67,9 +67,9 @@ public class NetworkPatrollingEnemy : NetworkBehaviour
 
     private void Update()
     {
+        UpdateAnimator();
         if (!IsServer) return;
         Patrol();
-        UpdateAnimator();
     }
 
     private void UpdateAnimator()

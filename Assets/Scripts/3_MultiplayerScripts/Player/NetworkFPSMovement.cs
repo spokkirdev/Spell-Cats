@@ -3,7 +3,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/**
 public enum PlayerState
 {
     Standing,
@@ -14,7 +13,7 @@ public enum PlayerState
     Levitating,
     Invisible
 }
-**/
+
 
 public class NetworkFPSMovement : NetworkBehaviour
 {

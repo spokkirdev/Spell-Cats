@@ -83,4 +83,11 @@ public class NetworkHealthComponent : NetworkBehaviour
             .SpawnPlayer(ownerId);
     }
 
+    [ServerRpc]
+    public void RequestRespawnServerRpc()
+    {
+        Debug.Log($"[NetworkHealthComponent] Respawn requested by client {OwnerClientId}");
+        RespawnCoroutine();
+    }
+
 }

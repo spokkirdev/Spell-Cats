@@ -1,16 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum PlayerState
-{
-    Standing,
-    Walking,
-    Running,
-    Crouching,
-    KnockedDown,
-    Levitating,
-    Invisible
-}
 
 public class FPSMovement : MonoBehaviour
 {

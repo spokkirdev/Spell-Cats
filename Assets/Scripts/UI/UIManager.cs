@@ -14,8 +14,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject radialMenu;
     [SerializeField] private GameObject camera;
     [SerializeField] private InputActionReference openRadialMenuAction;
+    [SerializeField] private InputActionReference openPauseMenuAction;
     [SerializeField] private TMPro.TextMeshProUGUI scoreText;
     [SerializeField] private TMPro.TextMeshProUGUI timerText;
+    [SerializeField] private GameObject pauseMenu;
 
     [SerializeField] private List<GameObject> healthHearts = new List<GameObject>(5);
 
@@ -42,7 +44,6 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         radialMenu = GameServiceLocator.GetService<RadialMenu>().gameObject;
-        _playerHealth = GameServiceLocator.GetService<NetworkHealthComponent>();
         GameServiceLocator.GetService<NetworkPoints>().Points.OnValueChanged += UpdateScoreText;
 
     }
@@ -51,15 +52,31 @@ public class UIManager : MonoBehaviour
     {
         openRadialMenuAction.action.performed += ToggleRadialMenu;
         openRadialMenuAction.action.canceled += ToggleRadialMenu;
+        openPauseMenuAction.action.performed += TogglePauseMenu;
     }
 
     private void OnDisable()
     {
         openRadialMenuAction.action.performed -= ToggleRadialMenu;
         openRadialMenuAction.action.canceled -= ToggleRadialMenu;
+        openPauseMenuAction.action.performed -= TogglePauseMenu;
         UnSubscribeNetworkPoints();
 
 
+    }
+
+    private void TogglePauseMenu(InputAction.CallbackContext context)
+    {
+        if (pauseMenu.activeSelf)
+        {
+            pauseMenu.SetActive(false);
+            GameServiceLocator.GetService<CursorControllerSystem>().HideCursor();
+        }
+        else
+        {
+            pauseMenu.SetActive(true);
+            GameServiceLocator.GetService<CursorControllerSystem>().ShowCursor();
+        }
     }
 
     private void Update()
@@ -73,7 +90,7 @@ public class UIManager : MonoBehaviour
         {
             if (!GameServiceLocator.GetService<NetworkTimer>().IsTimerRunning)
             {
-                GameServiceLocator.GetService<NetworkTimer>().StartTimerServerRpc(20f);
+                GameServiceLocator.GetService<NetworkTimer>().StartTimerServerRpc(600f);
                 return;
             }
             double remainingTime = GameServiceLocator.GetService<NetworkTimer>().GetRemainingTime();
@@ -104,6 +121,7 @@ public class UIManager : MonoBehaviour
     public void InitializeHealthBar()
     {
         _playerHealth = GameServiceLocator.GetService<NetworkHealthComponent>();
+        UpdateHealthBar(_playerHealth.CurrentHealth, 100f);
         _playerHealth.OnHealthChanged += UpdateHealthBar;
     }
 
