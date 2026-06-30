@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
         else
             PersistanceData.CreateNewGameData();
 
-        RequestMainMenuScene();
+        RequestOnlineMenuScene();
     }
 
     public void ChangeGameState(EGameState newState)

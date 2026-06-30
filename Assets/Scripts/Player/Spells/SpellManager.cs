@@ -18,6 +18,8 @@ public class SpellManager : NetworkBehaviour
         if (!IsOwner) return;
         GameServiceLocator.RegisterService<SpellManager>(this);
         castSpellAction.action.performed += OnCastSpell;
+        GameServiceLocator.GetService<UIManager>().UpdateActiveSpellUI();
+
     }
 
 
@@ -54,9 +56,11 @@ public class SpellManager : NetworkBehaviour
     {
         if (activeSpell != null && _canCast)
         {
+            float cooldownTime = activeSpell.cooldownTime;
+            float effectDuration = activeSpell.effectDuration;
+            Spell spell = activeSpell;
             activeSpell.Cast(spellCastPoint);
-            StartCoroutine(EffectDurationCoroutine(activeSpell.effectDuration, spellCastPoint));
-            StartCoroutine(CooldownCoroutine(activeSpell.cooldownTime));
+            StartCoroutine(EffectDurationCoroutine(effectDuration, cooldownTime, spellCastPoint, spell));
         }
     }
 
@@ -68,19 +72,29 @@ public class SpellManager : NetworkBehaviour
     private System.Collections.IEnumerator CooldownCoroutine(float cooldownTime)
     {
         _canCast = false;
+        GameServiceLocator.GetService<UIManager>().SetSpellCooldownUI();
         yield return new WaitForSeconds(cooldownTime);
+        GameServiceLocator.GetService<UIManager>().UpdateActiveSpellUI();
         _canCast = true;
     }
 
-    private System.Collections.IEnumerator EffectDurationCoroutine(float duration, Transform caster)
+    private System.Collections.IEnumerator EffectDurationCoroutine(float duration,float cooldownTime, Transform caster, Spell spell)
     {
+        _canCast = false;
+        GameServiceLocator.GetService<UIManager>().CastSpellUI();
         yield return new WaitForSeconds(duration);
-        activeSpell.Stop(caster);
+        spell.Stop(caster);
+        StartCoroutine(CooldownCoroutine(cooldownTime));
     }
 
     public void SetActiveSpell(Spell newSpell)
     {
         activeSpell = newSpell;
+    }
+
+    public Spell GetActiveSpell()
+    {
+        return activeSpell;
     }
 
     

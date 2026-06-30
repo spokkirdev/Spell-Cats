@@ -22,6 +22,8 @@ public class OnlineMenuManager : MonoBehaviour
     [SerializeField] private TMP_Text Rank_1;
     [SerializeField] private TMP_Text Rank_2;
     [SerializeField] private TMP_Text Rank_3;
+
+    private bool _updatingRanking = false;
     
 
 
@@ -38,28 +40,28 @@ public class OnlineMenuManager : MonoBehaviour
 
     private void Update()
     {
-        UpdateRankingPeriodically();
+        if (!_updatingRanking)
+        {
+            StartCoroutine(UpdateRankingPeriodically());
+        }
     }
 
-    private void UpdateRankingPeriodically()
+    private System.Collections.IEnumerator UpdateRankingPeriodically()
     {
-        // Update the ranking every 5 seconds
-        if (Time.frameCount % (5 * 60) == 0) // Assuming 60 FPS, this will be approximately every 5 seconds
-        {
-            UpdateRanking();
-        }
+        _updatingRanking = true;
+        UpdateRanking();
+        yield return new WaitForSeconds(60f);
+        _updatingRanking = false;
     }
 
     private void UpdateRanking()
     {
         RankingManager rankingManager = GameServiceLocator.GetService<RankingManager>();
-        Debug.Log($"[OnlineMenuManager] UpdateRanking: RankingManager instance: {rankingManager}");
         if (rankingManager != null)
         {
             rankingManager.DownloadScores();
             var scores = rankingManager.scores;
-            Debug.Log($"[OnlineMenuManager] UpdateRanking: {scores.Count} scores downloaded.");
-            Debug.Log($"[OnlineMenuManager] Scores: {string.Join(", ", scores.ConvertAll(s => $"{s.playerName}:{s.score}"))}");
+
             scores.Sort((a, b) => b.score.CompareTo(a.score)); // Sort descending
 
             Rank_1.text = scores.Count > 0 ? $"{scores[0].playerName}: {scores[0].score}" : "No Data";

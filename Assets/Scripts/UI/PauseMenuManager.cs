@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 
 public class PauseMenuManager : MonoBehaviour
 {
-
+    [SerializeField] private GameAudioManager gameAudioManager;
     public void Out_RespawnPlayer()
     {
         Debug.Log("Requesting respawn from PauseMenuManager");
@@ -20,5 +21,10 @@ public class PauseMenuManager : MonoBehaviour
     {
         GameServiceLocator.GetService<RelayManager>().CloseRoomCoroutine();
         GameManager.Instance.RequestOnlineMenuScene();
+    }
+
+    public void Out_ToggleMuteMusic()
+    {
+        gameAudioManager.ToggleMuteMusic();
     }
 }

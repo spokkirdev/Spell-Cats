@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 using Unity.Cinemachine;
 using System.Collections.Generic;
 using System;
+using TMPro;
+using UnityEngine.UI;
+using Unity.VisualScripting;
 
 
 public class UIManager : MonoBehaviour
@@ -18,6 +21,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI scoreText;
     [SerializeField] private TMPro.TextMeshProUGUI timerText;
     [SerializeField] private GameObject pauseMenu;
+
+    [SerializeField] private TextMeshProUGUI label;
+    [SerializeField] private Image icon;
+
+    [SerializeField] private Sprite spellCooldownImage;
 
     [SerializeField] private List<GameObject> healthHearts = new List<GameObject>(5);
 
@@ -45,7 +53,7 @@ public class UIManager : MonoBehaviour
     {
         radialMenu = GameServiceLocator.GetService<RadialMenu>().gameObject;
         GameServiceLocator.GetService<NetworkPoints>().Points.OnValueChanged += UpdateScoreText;
-
+        UpdateActiveSpellUI();
     }
 
     private void OnEnable()
@@ -71,11 +79,13 @@ public class UIManager : MonoBehaviour
         {
             pauseMenu.SetActive(false);
             GameServiceLocator.GetService<CursorControllerSystem>().HideCursor();
+            GameServiceLocator.GetService<NetworkFPSMovement>().ResumeMovement();
         }
         else
         {
             pauseMenu.SetActive(true);
             GameServiceLocator.GetService<CursorControllerSystem>().ShowCursor();
+            GameServiceLocator.GetService<NetworkFPSMovement>().PauseMovement();
         }
     }
 
@@ -164,5 +174,36 @@ public class UIManager : MonoBehaviour
         {
             healthHearts[i].SetActive(i < v);
         }
+    }
+
+    public void UpdateActiveSpellUI()
+    {
+        Spell activeSpell = GameServiceLocator.GetService<SpellManager>().GetActiveSpell();
+        if (activeSpell != null)
+        {
+            label.text = activeSpell.spellName;
+            icon.sprite = activeSpell.spellIcon;
+            icon.color = Color.white;
+
+        }
+        else
+        {
+            label.text = "No Spell";
+            icon.sprite = null; // Or set to a default sprite
+            icon.color = Color.white;
+        }
+    }
+
+    public void SetSpellCooldownUI()
+    {
+       label.text = "Spell Cooldown";
+       icon.sprite = spellCooldownImage;
+       icon.color = Color.white;
+    }
+
+    public void CastSpellUI()
+    {
+        label.text = "Casting Spell";
+        icon.color = Color.lightCyan;
     }
 }

@@ -233,7 +233,7 @@ MonoBehaviour:
   animator: {fileID: 2596084388131293515}
   waitTime: 2
   patrolSpeed: 3.5
-  chaseSpeed: 5
+  chaseSpeed: 8
   stopDistance: 0.5
 --- !u!114 &3027295050501975550
 MonoBehaviour:
@@ -248,7 +248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkEnemy
   ShowTopMostFoldoutHeaderGroup: 1
-  loseTargetDelay: 1
+  loseTargetDelay: 5
 --- !u!114 &1610541389288463734
 MonoBehaviour:
   m_ObjectHideFlags: 0

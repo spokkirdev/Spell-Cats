@@ -103,5 +103,7 @@ public class RadialMenu : MonoBehaviour
     {
         Debug.Log("Clicked from menu: " + entry);
         spellManager.SetActiveSpell(entry.GetSpell());
+        GameServiceLocator.GetService<UIManager>().UpdateActiveSpellUI();
+        
     }
 }

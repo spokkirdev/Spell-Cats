@@ -66,4 +66,13 @@ public class NetworkCatSpawner : NetworkBehaviour
         SpawnCat();
     
     }
+
+    public void RespawnCat()
+    {
+        if (!IsServer) return;
+
+        _currentCatCount--;
+        
+        SpawnCat();
+    }
 }

@@ -66,6 +66,8 @@ public class NetworkFPSMovement : NetworkBehaviour
     private PlayerState _currentState;
     private Vector3 _knockBackVelocity;
 
+    private bool _paused;
+
     public PlayerState CurrentState => NetworkedPlayerState.Value; // Expose the networked player state
 
     public NetworkVariable<PlayerState> NetworkedPlayerState = new NetworkVariable<PlayerState>(PlayerState.Standing, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -81,10 +83,20 @@ public class NetworkFPSMovement : NetworkBehaviour
         {
             playerModel.SetActive(false);
             particleEffects.Stop();
+            GameServiceLocator.RegisterService<NetworkFPSMovement>(this);
+        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (IsOwner)
+        {
+            GameServiceLocator.UnregisterService<NetworkFPSMovement>();
         }
     }
     private void Awake()
     {
+
         _characterController = GetComponent<CharacterController>();
         _targetHeight = standingHeight;
         NetworkedPlayerState.Value = PlayerState.Standing;
@@ -124,8 +136,7 @@ public class NetworkFPSMovement : NetworkBehaviour
         // Update the current state from the networked variable
         UpdateAnimations();
         if (!IsOwner) return;
-        Debug.Log("PlayerState: " + NetworkedPlayerState.Value);
-        Debug.Log($"Owner: {IsOwner} | MoveInput: {_moveInput} | Cam: {cameraTransform?.name}");
+        if (_paused) return;
 
         _isGrounded = _characterController.isGrounded;
         HandleGravity();
@@ -364,5 +375,18 @@ public class NetworkFPSMovement : NetworkBehaviour
         _isInvisible = false;
         gameObject.layer = LayerMask.NameToLayer("Player");
         invisibilityEffect.SetActive(false);
+    }
+
+    public void PauseMovement()
+    {
+        _paused = true;
+        NetworkedPlayerState.Value = PlayerState.Standing; 
+        cameraTransform.GetComponent<CinemachineInputAxisController>().enabled = false;
+    }
+
+    public void ResumeMovement()
+    {
+        _paused = false;
+        cameraTransform.GetComponent<CinemachineInputAxisController>().enabled = true;
     }
 }

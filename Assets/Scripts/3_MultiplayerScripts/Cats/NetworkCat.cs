@@ -22,4 +22,17 @@ public class NetworkCat : NetworkBehaviour
         // Destroy the cat object across the network
         GetComponent<NetworkObject>().Despawn();
     }
+
+    public void Respawn()
+    {
+        if (!IsServer) return;
+
+        // Call the RespawnCat method on the NetworkCatSpawner
+        NetworkCatSpawner catSpawner = GameServiceLocator.GetService<NetworkCatSpawner>();
+        if (catSpawner != null)
+        {
+            catSpawner.RespawnCat();
+        }
+        GetComponent<NetworkObject>().Despawn();
+    }
 }

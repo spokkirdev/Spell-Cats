@@ -41,14 +41,14 @@ public class ChatManager : NetworkBehaviour
 
     public void Out_SendChatMessage()
     {
-        SendMessageRpc(chatInputField.text, _onlineGameData.PlayerName);
+        SendMessageRpc(chatInputField.text, _onlineGameData.PlayerName, _playerColor);
         chatInputField.text = "";
     }
 
     [Rpc(SendTo.Everyone, InvokePermission =RpcInvokePermission.Everyone)]
-    private void SendMessageRpc(string message, string PlayerNameThatSendsMessage)
+    private void SendMessageRpc(string message, string PlayerNameThatSendsMessage, string playerColor)
     {
-        chatLog.text += "\n <color=" + _playerColor + ">" + PlayerNameThatSendsMessage + "</color>: " + message;
+        chatLog.text += "\n <color=" + playerColor + ">" + PlayerNameThatSendsMessage + "</color>: " + message;
     }
 
     public void UpdateUserConnected(OnlinePlayerData[] usersConnected)
