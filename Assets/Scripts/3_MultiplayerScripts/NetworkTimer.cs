@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System;
 
 public class NetworkTimer : NetworkBehaviour
 {
@@ -37,6 +38,7 @@ public class NetworkTimer : NetworkBehaviour
         if (remainingTime <= 0)
         {
             _endTime.Value = 0; 
+            StopTimerServerRpc();
             OnTimerFinishedClientRpc();
         }
     }
@@ -53,6 +55,22 @@ public class NetworkTimer : NetworkBehaviour
     public void StopTimerServerRpc()
     {
         _endTime.Value = 0;
+       UpdateScore();
+    }
+
+    private void UpdateScore()
+    {
+        RankingManager rankingManager = GameServiceLocator.GetService<RankingManager>();
+        if (rankingManager != null)
+        {
+            int score = GameServiceLocator.GetService<NetworkPoints>().Points.Value;
+            string username = GameServiceLocator.GetService<OnlineGameData>().PlayerName;
+            rankingManager.UploadScore(username, score);
+        }
+        else
+        {
+            Debug.LogError("[NetworkTimer] RankingManager service not found.");
+        }
     }
 
     [ClientRpc]

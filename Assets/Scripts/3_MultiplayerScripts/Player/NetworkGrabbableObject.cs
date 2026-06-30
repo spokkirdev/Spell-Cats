@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class NetworkGrabbableObject : NetworkBehaviour
 {
+
+    [Header("References")]
+    [SerializeField] private GameObject deathEffectPrefab;
     private Rigidbody _rigidbody;
     private Transform _holdPoint;
     private GameObject _jointObject;
@@ -26,6 +29,12 @@ public class NetworkGrabbableObject : NetworkBehaviour
         {
             _playerHoldingObject.GetComponent<NetworkPlayerPickUpDrop>().ForceDrop(); // Ensure the player drops the object when it despawns
         }
+
+        if (deathEffectPrefab != null)
+        {
+            Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        }
+        
     }
 
     /**

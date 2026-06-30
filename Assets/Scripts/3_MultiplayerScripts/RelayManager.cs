@@ -19,6 +19,9 @@ public class RelayManager : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private int maxConnections = 4;
 
+    public String JoinCode { get; private set; } = string.Empty;
+    
+
     private bool _initialized = false;
 
     private void Awake()
@@ -75,11 +78,13 @@ public class RelayManager : MonoBehaviour
                 .SetClientSynchronizationMode(LoadSceneMode.Additive);
 
             Debug.Log($"[Relay] Sala creada. Join code: {joinCode}");
+            JoinCode = joinCode;
             return joinCode;
         }
         catch (Exception e)
         {
             Debug.LogError($"[Relay] Error creando sala: {e.Message}");
+            JoinCode = string.Empty;
             throw;
         }
     }
@@ -100,11 +105,13 @@ public class RelayManager : MonoBehaviour
             NetworkManager.Singleton.SceneManager
                 .SetClientSynchronizationMode(LoadSceneMode.Additive);
 
+            JoinCode = joinCode;
             return true;
         }
         catch (Exception e)
         {
             Debug.LogError($"[Relay] Error uniéndose: {e.Message}");
+            JoinCode = string.Empty;
             return false;
         }
     }

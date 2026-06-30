@@ -63,8 +63,6 @@ public class NetworkCatSpawner : NetworkBehaviour
 
         _currentCatCount--;
 
-        //AÑADIR LOGICA DE PUNTOS AQUI
-
         SpawnCat();
     
     }

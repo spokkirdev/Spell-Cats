@@ -17,6 +17,7 @@ public class SpellManager : NetworkBehaviour
     {
         if (!IsOwner) return;
         GameServiceLocator.RegisterService<SpellManager>(this);
+        castSpellAction.action.performed += OnCastSpell;
     }
 
 
@@ -24,14 +25,17 @@ public class SpellManager : NetworkBehaviour
     {
         if (!IsOwner) return;
         GameServiceLocator.UnregisterService<SpellManager>();
+        castSpellAction.action.performed -= OnCastSpell;
     }
     private void OnEnable()
     {
+        if (!IsOwner) return;
         castSpellAction.action.performed += OnCastSpell;
     }
 
     private void OnDisable()
     {
+        if (!IsOwner) return;
         castSpellAction.action.performed -= OnCastSpell;
     }
 

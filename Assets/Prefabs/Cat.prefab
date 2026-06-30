@@ -183,6 +183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkGrabbableObject
   ShowTopMostFoldoutHeaderGroup: 1
+  deathEffectPrefab: {fileID: 1575721338728490, guid: 4171bb92c5c591848b14be1db6f3efe2, type: 3}
 --- !u!114 &8197702459438005510
 MonoBehaviour:
   m_ObjectHideFlags: 0

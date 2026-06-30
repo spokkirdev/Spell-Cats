@@ -79,15 +79,27 @@ public class NetworkPatrollingEnemy : NetworkBehaviour
             case EnemyState.Waiting:
                 // Set waiting animation
                 animator.SetBool("IsMoving", false);
+                animator.SetBool("Chasing", false);
+                animator.SetBool("Attacking", false);
                 break;
             case EnemyState.Patrolling:
                 // Set patrolling animation
                 animator.SetBool("IsMoving", true);
                 animator.SetBool("Chasing", false);
+                animator.SetBool("Attacking", false);
                 break;
             case EnemyState.Chasing:
                 // Set chasing animation
+                animator.SetBool("IsMoving", true);
                 animator.SetBool("Chasing", true);
+                animator.SetBool("Attacking", false);
+
+                break;
+            case EnemyState.Attacking:
+                // Set attacking animation
+                animator.SetBool("IsMoving", false);
+                animator.SetBool("Attacking", true);
+                animator.SetBool("Chasing", false);
                 break;
         }
         

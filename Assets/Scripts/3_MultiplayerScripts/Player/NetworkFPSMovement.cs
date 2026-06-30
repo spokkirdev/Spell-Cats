@@ -1,3 +1,4 @@
+using System;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,6 +10,7 @@ public enum PlayerState
     Walking,
     Running,
     Crouching,
+    Jumping,
     KnockedDown,
     Levitating,
     Invisible
@@ -39,6 +41,12 @@ public class NetworkFPSMovement : NetworkBehaviour
     [SerializeField] private InputActionReference jumpAction;
     [SerializeField] private InputActionReference sprintAction;
     [SerializeField] private InputActionReference crouchAction;
+    [SerializeField] private Animator animator;
+    [SerializeField] private GameObject playerModel;
+    [SerializeField] private ParticleSystem particleEffects;
+
+    [SerializeField] private GameObject levitationEffect;
+    [SerializeField] private GameObject invisibilityEffect;
 
     [Header("Knockback Settings")]
     [SerializeField] private float knockbackDecay = 8f;
@@ -58,7 +66,9 @@ public class NetworkFPSMovement : NetworkBehaviour
     private PlayerState _currentState;
     private Vector3 _knockBackVelocity;
 
-    public PlayerState CurrentState => _currentState;
+    public PlayerState CurrentState => NetworkedPlayerState.Value; // Expose the networked player state
+
+    public NetworkVariable<PlayerState> NetworkedPlayerState = new NetworkVariable<PlayerState>(PlayerState.Standing, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
  
 
     public override void OnNetworkSpawn()
@@ -67,12 +77,17 @@ public class NetworkFPSMovement : NetworkBehaviour
         {
             GetComponentInChildren<CinemachineCamera>().gameObject.SetActive(false);
         }
+        else
+        {
+            playerModel.SetActive(false);
+            particleEffects.Stop();
+        }
     }
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _targetHeight = standingHeight;
-        _currentState = PlayerState.Standing;
+        NetworkedPlayerState.Value = PlayerState.Standing;
 
         GameServiceLocator.GetService<CursorControllerSystem>()?.HideCursor();
 
@@ -105,9 +120,11 @@ public class NetworkFPSMovement : NetworkBehaviour
 
 
     private void Update()
-    {
+    {   
+        // Update the current state from the networked variable
+        UpdateAnimations();
         if (!IsOwner) return;
-        Debug.Log("PlayerState: " + _currentState);
+        Debug.Log("PlayerState: " + NetworkedPlayerState.Value);
         Debug.Log($"Owner: {IsOwner} | MoveInput: {_moveInput} | Cam: {cameraTransform?.name}");
 
         _isGrounded = _characterController.isGrounded;
@@ -124,6 +141,49 @@ public class NetworkFPSMovement : NetworkBehaviour
         HandleStateTransitions();
     }
 
+    private void UpdateAnimations()
+    {
+        switch(NetworkedPlayerState.Value)
+        {
+            case PlayerState.Standing:
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isCrouching", false);
+                animator.SetBool("isJumping", false);
+                break;
+            case PlayerState.Walking:
+                animator.SetBool("isWalking", true);
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isCrouching", false);
+                animator.SetBool("isJumping", false);
+                break;
+            case PlayerState.Running:
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isRunning", true);
+                animator.SetBool("isCrouching", false);
+                animator.SetBool("isJumping", false);
+                break;
+            case PlayerState.Crouching:
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isCrouching", true);
+                animator.SetBool("isJumping", false);
+                break;
+            case PlayerState.Jumping:
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isCrouching", false);
+                animator.SetBool("isJumping", true);
+                break;
+            default:
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isCrouching", false);
+                animator.SetBool("isJumping", false);
+                break;
+        }
+    }
+
     private void StoreMovementInput(InputAction.CallbackContext context)
     {
         Debug.Log("Storing movement input: " + context.ReadValue<Vector2>());
@@ -134,6 +194,7 @@ public class NetworkFPSMovement : NetworkBehaviour
     {
         if (_isGrounded)
         {
+            NetworkedPlayerState.Value = PlayerState.Jumping;
             _verticalVelocity = jumpForce;
         }
     }
@@ -224,31 +285,31 @@ public class NetworkFPSMovement : NetworkBehaviour
     {
         if (_isKnockedDown)
         {
-            _currentState = PlayerState.KnockedDown;
+            NetworkedPlayerState.Value = PlayerState.KnockedDown;
         }
         else if (_isLevitating)
         {
-            _currentState = PlayerState.Levitating;
+            NetworkedPlayerState.Value = PlayerState.Levitating;
         }
         else if (_isInvisible)
         {
-            _currentState = PlayerState.Invisible;
+            NetworkedPlayerState.Value = PlayerState.Invisible;
         }
         else if (_isCrouching)
         {
-            _currentState = PlayerState.Crouching;
+            NetworkedPlayerState.Value = PlayerState.Crouching;
         }
         else if (_isSprinting && _moveInput.magnitude > 0.1f)
         {
-            _currentState = PlayerState.Running;
+            NetworkedPlayerState.Value = PlayerState.Running;
         }
         else if (_moveInput.magnitude > 0.1f)
         {
-            _currentState = PlayerState.Walking;
+            NetworkedPlayerState.Value = PlayerState.Walking;
         }
         else
         {
-            _currentState = PlayerState.Standing;
+            NetworkedPlayerState.Value = PlayerState.Standing;
         }
     }
 
@@ -282,22 +343,26 @@ public class NetworkFPSMovement : NetworkBehaviour
     public void StartLevitation()
     {
         _isLevitating = true;
+        levitationEffect.SetActive(true);
     }
 
     public void StopLevitation()
     {
         _isLevitating = false;
+        levitationEffect.SetActive(false);
     }
 
     public void StartInvisibility()
     {
         _isInvisible = true;
         gameObject.layer = LayerMask.NameToLayer("PlayerInvisible");
+        invisibilityEffect.SetActive(true);
     }
 
     public void StopInvisibility()
     {
         _isInvisible = false;
         gameObject.layer = LayerMask.NameToLayer("Player");
+        invisibilityEffect.SetActive(false);
     }
 }
