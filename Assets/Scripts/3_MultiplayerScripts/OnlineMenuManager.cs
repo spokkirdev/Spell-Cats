@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using TMPro;
+using UnityEngine.UI;
 
 public class OnlineMenuManager : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class OnlineMenuManager : MonoBehaviour
     [SerializeField] private  GameObject joinGameButton;
     [SerializeField] private  GameObject joinGameButton2;
     [SerializeField] private GameObject hostGameButton;
+    [SerializeField] private Button newGameButton;
     [SerializeField] private GameObject RoomCodeText;
     [SerializeField] private GameObject RoomCodeField;
     [SerializeField] private TMPro.TMP_Text JoinGame_BackText;
@@ -32,6 +34,7 @@ public class OnlineMenuManager : MonoBehaviour
 
     private void Start()
     {
+        _updatingRanking = false;
         _onlineGameData = GameServiceLocator.GetService<OnlineGameData>();
         _relayManager = GameServiceLocator.GetService<RelayManager>();
         playerNameInputField.text = "Player" + Random.Range(1000, 9999);
@@ -75,10 +78,11 @@ public class OnlineMenuManager : MonoBehaviour
         _onlineGameData.PlayerName = playerNameInputField.text;
         try
         {
+            newGameButton.interactable = false;
             string joinCode = await _relayManager.CreateRoomAsync(4);        }
         catch
         {
-            
+            newGameButton.interactable = true;
         }
     }
 

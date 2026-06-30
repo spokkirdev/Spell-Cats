@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c593c70403a93409629687b6e12fd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttack
-  attackRange: 1.5
+  attackRange: 2
   cooldownTime: 1
 --- !u!54 &4797743901183846618
 Rigidbody:

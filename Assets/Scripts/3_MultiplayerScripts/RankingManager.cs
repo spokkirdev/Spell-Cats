@@ -81,6 +81,11 @@ public class RankingManager : NetworkBehaviour
 
                 Debug.Log($"[RankingManager] Downloaded scores: {data}");
 
+                if (data.StartsWith("ERROR"))
+                {
+                    yield break;
+                }
+
                 scores.Clear();
 
                 string[] lines = data.Split('\n');
