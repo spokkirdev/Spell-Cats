@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/0_MainScene.unity
+    path: Assets/1_Scenes/0_MainScene.unity
     guid: 0c7af03bbf2b3fc4382ee86dfc8c557f
   - enabled: 0
     path: Assets/Scenes/1_MenuScene.unity
@@ -18,13 +18,13 @@ EditorBuildSettings:
     path: Assets/Scenes/2_GameScene.unity
     guid: e69db2cdc21b62646aa93fee0e002918
   - enabled: 1
-    path: Assets/Scenes/3_OnlineMainMenu.unity
+    path: Assets/1_Scenes/3_OnlineMainMenu.unity
     guid: 664803a21de0d6b4c972b256fa21745f
   - enabled: 1
-    path: Assets/Scenes/4_LobbyMenu.unity
+    path: Assets/1_Scenes/4_LobbyMenu.unity
     guid: 3585599bde2724e46894f75b259677c5
   - enabled: 1
-    path: Assets/Scenes/10_OnlineGameScene.unity
+    path: Assets/1_Scenes/10_OnlineGameScene.unity
     guid: e48fb08a40988b2419a7f0fb6ee055ca
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
